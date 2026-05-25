@@ -356,6 +356,516 @@
         color: var(--text-dim);
       }
 
+      /* ── TABLE DATA PREVIEW PANEL (canvas overlay) ── */
+      #tbl-preview-panel {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: #fff;
+        border-top: 2px solid var(--red);
+        box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.15);
+        z-index: 50;
+        display: none;
+        flex-direction: column;
+        max-height: 55%;
+      }
+      #tbl-preview-panel.open {
+        display: flex;
+      }
+      #tbl-preview-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 14px;
+        background: #1a1a1a;
+        flex-shrink: 0;
+      }
+      #tbl-preview-title {
+        font-size: 13px;
+        font-weight: 800;
+        color: #fff;
+        flex: 1;
+      }
+      #tbl-preview-count {
+        font-size: 10px;
+        color: #ffd200;
+        background: rgba(255, 210, 0, 0.15);
+        padding: 2px 8px;
+        border-radius: 10px;
+      }
+      .tbl-preview-close {
+        background: none;
+        border: none;
+        color: #888;
+        font-size: 16px;
+        cursor: pointer;
+      }
+      .tbl-preview-close:hover {
+        color: #fff;
+      }
+      #tbl-preview-scroll {
+        flex: 1;
+        overflow: auto;
+      }
+      #tbl-preview-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 11px;
+      }
+      #tbl-preview-table thead th {
+        background: #1a1a1a;
+        color: #ffd200;
+        padding: 7px 12px;
+        text-align: left;
+        font-size: 10px;
+        text-transform: uppercase;
+        position: sticky;
+        top: 0;
+        letter-spacing: 0.4px;
+      }
+      #tbl-preview-table tbody td {
+        padding: 6px 12px;
+        border-top: 1px solid #f0f0f0;
+        color: #333;
+      }
+      #tbl-preview-table tbody tr:hover td {
+        background: #fff9e0;
+      }
+      #tbl-preview-table tbody tr:nth-child(even) td {
+        background: #fafafa;
+      }
+
+      /* ── NOTIFICACIONES PUSH MODAL ── */
+      #notif-modal {
+        position: fixed;
+        inset: 0;
+        z-index: 700;
+        background: rgba(0, 0, 0, 0.6);
+        display: none;
+        align-items: center;
+        justify-content: center;
+      }
+      #notif-modal.open {
+        display: flex;
+      }
+      #notif-box {
+        background: #fff;
+        border-radius: 16px;
+        width: min(900px, 96vw);
+        max-height: 92vh;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 30px 90px rgba(0, 0, 0, 0.45);
+        overflow: hidden;
+      }
+      #notif-head {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 16px 20px;
+        background: #1a1a1a;
+        flex-shrink: 0;
+      }
+      #notif-head .nh-title {
+        font-size: 15px;
+        font-weight: 800;
+        color: #fff;
+        flex: 1;
+      }
+      .nh-close {
+        background: none;
+        border: none;
+        color: #888;
+        font-size: 18px;
+        cursor: pointer;
+      }
+      .nh-close:hover {
+        color: #fff;
+      }
+      #notif-body {
+        display: flex;
+        flex: 1;
+        overflow: hidden;
+        min-height: 0;
+      }
+
+      /* Left: user list */
+      #notif-users {
+        width: 340px;
+        flex-shrink: 0;
+        border-right: 1px solid #eee;
+        overflow-y: auto;
+        background: #fafafa;
+      }
+      .nu-filter-bar {
+        padding: 10px 12px;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+        background: #fff;
+        position: sticky;
+        top: 0;
+        z-index: 2;
+      }
+      .nu-filter-btn {
+        padding: 4px 10px;
+        border-radius: 14px;
+        font-size: 10px;
+        font-weight: 700;
+        border: 1px solid #ddd;
+        background: #f5f5f5;
+        color: #666;
+        cursor: pointer;
+        transition: 0.15s;
+      }
+      .nu-filter-btn:hover,
+      .nu-filter-btn.active {
+        background: var(--red);
+        border-color: var(--red);
+        color: #fff;
+      }
+      .nu-filter-btn.warn {
+        background: #ff9500;
+        border-color: #ff9500;
+        color: #fff;
+      }
+      .nu-filter-btn.critical {
+        background: #cc0000;
+        border-color: #cc0000;
+        color: #fff;
+      }
+      .nu-row {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 10px 14px;
+        border-bottom: 1px solid #eee;
+        cursor: pointer;
+        transition: 0.12s;
+      }
+      .nu-row:hover {
+        background: #fff3f3;
+      }
+      .nu-row.selected {
+        background: #fdeaea;
+        border-left: 3px solid var(--red);
+      }
+      .nu-avatar {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        font-weight: 800;
+        color: #fff;
+        flex-shrink: 0;
+        margin-top: 2px;
+      }
+      .nu-info {
+        flex: 1;
+        min-width: 0;
+      }
+      .nu-name {
+        font-size: 12px;
+        font-weight: 700;
+        color: #1a1a1a;
+        margin-bottom: 2px;
+      }
+      .nu-cc {
+        font-size: 10px;
+        color: #888;
+        margin-bottom: 4px;
+      }
+      .nu-badges {
+        display: flex;
+        gap: 4px;
+        flex-wrap: wrap;
+      }
+      .nu-badge {
+        font-size: 9px;
+        font-weight: 700;
+        padding: 2px 7px;
+        border-radius: 8px;
+      }
+      .badge-ok {
+        background: #e8f5e9;
+        color: #2e7d32;
+      }
+      .badge-warn {
+        background: #fff3e0;
+        color: #e65100;
+      }
+      .badge-critical {
+        background: #ffebee;
+        color: #c62828;
+      }
+      .badge-expired {
+        background: #f3e5f5;
+        color: #6a1b9a;
+      }
+
+      /* Right: detail + send */
+      #notif-detail {
+        flex: 1;
+        overflow-y: auto;
+        padding: 18px 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+      .nd-empty {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: #ccc;
+        gap: 8px;
+      }
+      .nd-empty-icon {
+        font-size: 48px;
+      }
+      .nd-user-card {
+        background: linear-gradient(135deg, #1a1a1a, #333);
+        border-radius: 12px;
+        padding: 16px 18px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      .nd-avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        font-weight: 900;
+        color: #fff;
+        flex-shrink: 0;
+      }
+      .nd-info {
+        flex: 1;
+      }
+      .nd-name {
+        font-size: 15px;
+        font-weight: 800;
+        color: #fff;
+      }
+      .nd-sub {
+        font-size: 11px;
+        color: #aaa;
+        margin-top: 2px;
+      }
+      .nd-pts {
+        font-size: 22px;
+        font-weight: 900;
+        color: #ffd200;
+      }
+      .nd-pts-lbl {
+        font-size: 9px;
+        color: #888;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      /* Beneficio cards */
+      .nd-benefits-title {
+        font-size: 11px;
+        font-weight: 700;
+        color: #888;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+      }
+      .nd-ben-card {
+        border: 1px solid #eee;
+        border-radius: 10px;
+        padding: 12px 14px;
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        transition: 0.15s;
+      }
+      .nd-ben-card:hover {
+        border-color: var(--red);
+        background: #fff8f8;
+      }
+      .nd-ben-icon {
+        font-size: 24px;
+        flex-shrink: 0;
+        margin-top: 2px;
+      }
+      .nd-ben-info {
+        flex: 1;
+      }
+      .nd-ben-name {
+        font-size: 12px;
+        font-weight: 700;
+        color: #1a1a1a;
+        margin-bottom: 3px;
+      }
+      .nd-ben-det {
+        font-size: 10px;
+        color: #666;
+        margin-bottom: 6px;
+      }
+      .nd-ben-days {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 11px;
+        font-weight: 800;
+        padding: 3px 10px;
+        border-radius: 10px;
+      }
+      .days-ok {
+        background: #e8f5e9;
+        color: #2e7d32;
+      }
+      .days-warn {
+        background: #fff3e0;
+        color: #e65100;
+      }
+      .days-critical {
+        background: #ffebee;
+        color: #c62828;
+        animation: blink 1.2s ease-in-out infinite;
+      }
+      .days-expired {
+        background: #f3e5f5;
+        color: #6a1b9a;
+      }
+      @keyframes blink {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.5;
+        }
+      }
+
+      /* Push notification sender */
+      .nd-push-section {
+        background: #f8f9fa;
+        border: 1px solid #eee;
+        border-radius: 12px;
+        padding: 14px 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .nd-push-title {
+        font-size: 11px;
+        font-weight: 700;
+        color: #555;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+      }
+      .push-template-row {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+      .push-tmpl {
+        padding: 5px 10px;
+        border-radius: 8px;
+        font-size: 10px;
+        font-weight: 600;
+        border: 1px solid #ddd;
+        background: #fff;
+        color: #555;
+        cursor: pointer;
+        transition: 0.15s;
+      }
+      .push-tmpl:hover {
+        border-color: var(--red);
+        color: var(--red);
+      }
+      .push-tmpl.active {
+        background: var(--red);
+        border-color: var(--red);
+        color: #fff;
+      }
+      .push-msg-input {
+        width: 100%;
+        padding: 8px 10px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 11px;
+        color: #1a1a1a;
+        outline: none;
+        resize: vertical;
+        min-height: 60px;
+      }
+      .push-msg-input:focus {
+        border-color: var(--red);
+      }
+      .push-send-row {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      .push-send-btn {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 18px;
+        border-radius: 8px;
+        background: var(--red);
+        color: #fff;
+        border: none;
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: 0.15s;
+      }
+      .push-send-btn:hover {
+        background: var(--red-dark);
+      }
+      .push-send-btn.all {
+        background: #333;
+      }
+      .push-send-btn.all:hover {
+        background: #111;
+      }
+      .push-sent-log {
+        max-height: 120px;
+        overflow-y: auto;
+        background: #1a1a1a;
+        border-radius: 8px;
+        padding: 8px 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .push-log-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 10px;
+        color: #888;
+        font-family: monospace;
+      }
+      .push-log-item .pli-time {
+        color: #555;
+        flex-shrink: 0;
+      }
+      .push-log-item .pli-ok {
+        color: #4caf50;
+      }
+      .push-log-item .pli-warn {
+        color: #ffd200;
+      }
+      .push-log-item .pli-name {
+        color: #90caf9;
+      }
+
       /* ── CANVAS ── */
       #canvas-wrap {
         flex: 1;
@@ -2153,6 +2663,13 @@
         <button class="tb-action btn-ghost" onclick="importJSON()">
           ⬆ Importar
         </button>
+        <button
+          class="tb-action"
+          style="background: #ff9500; color: #fff; border: none"
+          onclick="openNotifModal()"
+        >
+          🔔 Notificaciones
+        </button>
         <button class="tb-action btn-red" onclick="runFlow()">
           ▶ Ejecutar flujo
         </button>
@@ -2350,6 +2867,22 @@
               <g id="temp-layer"></g>
             </svg>
             <div id="nodes-layer"></div>
+          </div>
+          <!-- TABLE DATA PREVIEW PANEL -->
+          <div id="tbl-preview-panel">
+            <div id="tbl-preview-header">
+              <span id="tbl-preview-title">tabla</span>
+              <span id="tbl-preview-count">0 registros</span>
+              <button class="tbl-preview-close" onclick="closeTblPreview()">
+                ✕
+              </button>
+            </div>
+            <div id="tbl-preview-scroll">
+              <table id="tbl-preview-table">
+                <thead></thead>
+                <tbody></tbody>
+              </table>
+            </div>
           </div>
           <canvas id="minimap" width="140" height="90"></canvas>
         </div>
@@ -2650,6 +3183,78 @@ ORDER BY v.precio DESC;</textarea
       <div class="ctx-item danger" onclick="ctxDo('del')">🗑 Eliminar</div>
     </div>
 
+    <!-- NOTIFICATIONS PUSH MODAL -->
+    <div id="notif-modal">
+      <div id="notif-box">
+        <div id="notif-head">
+          <span style="font-size: 22px">🔔</span>
+          <span class="nh-title"
+            >Centro de Notificaciones Push — Vencimiento de Beneficios</span
+          >
+          <div style="display: flex; gap: 8px; align-items: center">
+            <button
+              style="
+                background: var(--red);
+                border: none;
+                color: #fff;
+                padding: 6px 14px;
+                border-radius: 7px;
+                font-size: 11px;
+                font-weight: 700;
+                cursor: pointer;
+              "
+              onclick="sendAllCritical()"
+            >
+              ⚡ Enviar a todos críticos
+            </button>
+            <button class="nh-close" onclick="closeNotifModal()">✕</button>
+          </div>
+        </div>
+        <div id="notif-body">
+          <div id="notif-users">
+            <div class="nu-filter-bar">
+              <button
+                class="nu-filter-btn active"
+                onclick="filterNotif('all', this)"
+              >
+                Todos
+              </button>
+              <button
+                class="nu-filter-btn warn"
+                onclick="filterNotif('warn', this)"
+              >
+                ⚠ 7 días
+              </button>
+              <button
+                class="nu-filter-btn critical"
+                onclick="filterNotif('critical', this)"
+              >
+                🚨 3 días
+              </button>
+              <button
+                class="nu-filter-btn critical"
+                onclick="filterNotif('urgent', this)"
+              >
+                🔴 1 día
+              </button>
+            </div>
+            <div id="nu-list"></div>
+          </div>
+          <div id="notif-detail">
+            <div class="nd-empty">
+              <div class="nd-empty-icon">👈</div>
+              <div style="font-size: 13px; font-weight: 700">
+                Selecciona un usuario
+              </div>
+              <div style="font-size: 11px">
+                para ver sus beneficios y enviar notificaciones
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- SQL POPUP MODAL -->
     <div id="sql-modal">
       <div id="sql-modal-box">
@@ -2687,6 +3292,87 @@ ORDER BY v.precio DESC;</textarea
                   style="color: var(--red); font-weight: 700"
                 ></span
               ></span>
+            </div>
+            <!-- Quick queries sugeridas -->
+            <div
+              style="
+                display: flex;
+                gap: 6px;
+                flex-wrap: wrap;
+                margin-top: 8px;
+                padding-top: 8px;
+                border-top: 1px solid #eee;
+              "
+            >
+              <span
+                style="
+                  font-size: 9px;
+                  color: #aaa;
+                  align-self: center;
+                  white-space: nowrap;
+                "
+                >⚡ Consultas sugeridas:</span
+              >
+              <button
+                class="sm-hist-btn"
+                style="
+                  background: #e8f5ff;
+                  border-color: #1a7bd4;
+                  color: #1a7bd4;
+                "
+                onclick="
+                  document.getElementById('sm-editor').value =
+                    `SELECT u.nombre, u.cc, SUM(h.puntos) AS total_puntos FROM usuarios u JOIN historial_puntos h ON u.cc = h.usuario_cc GROUP BY u.cc`;
+                  runSQLModal();
+                "
+              >
+                🏅 Puntos por usuario
+              </button>
+              <button
+                class="sm-hist-btn"
+                style="
+                  background: #fff3e0;
+                  border-color: #e65100;
+                  color: #e65100;
+                "
+                onclick="
+                  document.getElementById('sm-editor').value =
+                    `SELECT u.nombre, u.cc, b.tipo AS beneficio, b.fecha_fin, bu.codigo_qr, bu.estado FROM beneficios_usuarios bu JOIN usuarios u ON bu.usuario_cc = u.cc JOIN beneficios b ON bu.beneficio_id = b.id WHERE bu.usuario_cc = '3119880889'`;
+                  runSQLModal();
+                "
+              >
+                🎁 Beneficios de Carlos (430 pts)
+              </button>
+              <button
+                class="sm-hist-btn"
+                style="
+                  background: #fff0f0;
+                  border-color: #cc0000;
+                  color: #cc0000;
+                "
+                onclick="
+                  document.getElementById('sm-editor').value =
+                    `SELECT u.nombre, u.cc, SUM(h.puntos) AS total_puntos, b.tipo AS beneficio, b.fecha_fin, bu.estado FROM usuarios u JOIN historial_puntos h ON u.cc = h.usuario_cc JOIN beneficios_usuarios bu ON u.cc = bu.usuario_cc JOIN beneficios b ON bu.beneficio_id = b.id WHERE bu.estado = 'ACTIVO' GROUP BY u.cc, b.id ORDER BY b.fecha_fin ASC`;
+                  runSQLModal();
+                "
+              >
+                ⚠️ Usuarios + puntos + beneficios activos
+              </button>
+              <button
+                class="sm-hist-btn"
+                style="
+                  background: #e8f5e9;
+                  border-color: #2e7d32;
+                  color: #2e7d32;
+                "
+                onclick="
+                  document.getElementById('sm-editor').value =
+                    `SELECT * FROM usuarios`;
+                  runSQLModal();
+                "
+              >
+                👥 Todos los usuarios
+              </button>
             </div>
             <div class="sm-history" id="sm-history"></div>
           </div>
@@ -3362,7 +4048,7 @@ ORDER BY v.precio DESC;</textarea
           const el = document.createElement("div");
           el.className = "tbl-card";
           el.innerHTML = `
-      <div class="tbl-head" onclick="toggleTbl('tf-${t.id}')">
+      <div class="tbl-head" onclick="showTablePreview('${t.name}','${t.color}')">
         <div class="tbl-dot" style="background:${t.color};"></div>
         <div class="tbl-name">${t.name}</div>
         <div class="tbl-cnt">${t.fields.length}</div>
@@ -3377,6 +4063,40 @@ ORDER BY v.precio DESC;</textarea
         });
         updateStats();
         updateAvailTables();
+      }
+
+      /* ── TABLE DATA PREVIEW ── */
+      function showTablePreview(tname, color) {
+        const rows =
+          DB[tname] ||
+          DB[
+            Object.keys(DB).find((k) => k.toLowerCase() === tname.toLowerCase())
+          ];
+        if (!rows || !rows.length) {
+          closeTblPreview();
+          toast(`Tabla '${tname}' sin datos cargados`, "err");
+          return;
+        }
+        const cols = Object.keys(rows[0]);
+        const thead = document.querySelector("#tbl-preview-table thead");
+        const tbody = document.querySelector("#tbl-preview-table tbody");
+        thead.innerHTML = `<tr>${cols.map((c) => `<th>${c}</th>`).join("")}</tr>`;
+        tbody.innerHTML = rows
+          .map(
+            (r) =>
+              `<tr>${cols.map((c) => `<td>${r[c] ?? ""}</td>`).join("")}</tr>`,
+          )
+          .join("");
+        document.getElementById("tbl-preview-title").textContent =
+          `📋 ${tname}`;
+        document.getElementById("tbl-preview-title").style.color =
+          color || "#FFD200";
+        document.getElementById("tbl-preview-count").textContent =
+          `${rows.length} registros · ${cols.length} columnas`;
+        document.getElementById("tbl-preview-panel").classList.add("open");
+      }
+      function closeTblPreview() {
+        document.getElementById("tbl-preview-panel").classList.remove("open");
       }
       function toggleTbl(id) {
         document.getElementById(id)?.classList.toggle("open");
@@ -3544,6 +4264,208 @@ ORDER BY v.precio DESC;</textarea
       };
       DB.ventas = DB.venta;
 
+      // Tablas del proyecto Vívelo Terpel
+      DB.usuarios = [
+        {
+          cc: "3119880889",
+          nombre: "Carlos García",
+          celular: "3119880889",
+          correo: "usuario1@terpel.com",
+        },
+        {
+          cc: "3121706301",
+          nombre: "María López",
+          celular: "3121706301",
+          correo: "usuario2@terpel.com",
+        },
+        {
+          cc: "3138770764",
+          nombre: "Pedro Martínez",
+          celular: "3138770764",
+          correo: "usuario3@terpel.com",
+        },
+        {
+          cc: "3145668617",
+          nombre: "Ana Gómez",
+          celular: "3145668617",
+          correo: "usuario4@terpel.com",
+        },
+        {
+          cc: "3153240054",
+          nombre: "Luis Torres",
+          celular: "3153240054",
+          correo: "usuario5@terpel.com",
+        },
+      ];
+      DB.beneficios = [
+        {
+          id: 1,
+          tipo: "Bono Combustible $20.000",
+          valor_descuento: 20000,
+          puntos_requeridos: 400,
+          fecha_inicio: "2026-01-01",
+          fecha_fin: "2026-05-23",
+          dias_permitidos: "Todos",
+          comercio: "Terpel",
+        },
+        {
+          id: 2,
+          tipo: "Descuento Tienda 10%",
+          valor_descuento: 0.1,
+          puntos_requeridos: 200,
+          fecha_inicio: "2026-03-01",
+          fecha_fin: "2026-05-26",
+          dias_permitidos: "Todos",
+          comercio: "Tienda Terpel",
+        },
+        {
+          id: 3,
+          tipo: "Cashback 5% Gasolina",
+          valor_descuento: 0.05,
+          puntos_requeridos: 300,
+          fecha_inicio: "2026-01-01",
+          fecha_fin: "2026-05-27",
+          dias_permitidos: "Todos",
+          comercio: "Terpel",
+        },
+        {
+          id: 4,
+          tipo: "Car wash gratis",
+          valor_descuento: 0,
+          puntos_requeridos: 300,
+          fecha_inicio: "2026-01-01",
+          fecha_fin: "2026-06-30",
+          dias_permitidos: "Sabado,Domingo",
+          comercio: "Terpel",
+        },
+        {
+          id: 5,
+          tipo: "Cafe gratis",
+          valor_descuento: 0,
+          puntos_requeridos: 150,
+          fecha_inicio: "2026-01-01",
+          fecha_fin: "2026-12-31",
+          dias_permitidos: "Todos",
+          comercio: "Tienda Terpel",
+        },
+      ];
+      DB.historial_puntos = [
+        {
+          id: 1,
+          usuario_cc: "3119880889",
+          tipo_movimiento: "GANANCIA",
+          puntos: 250,
+          fecha: "2026-04-10 08:30:00",
+        },
+        {
+          id: 2,
+          usuario_cc: "3119880889",
+          tipo_movimiento: "GANANCIA",
+          puntos: 180,
+          fecha: "2026-04-20 10:15:00",
+        },
+        {
+          id: 3,
+          usuario_cc: "3121706301",
+          tipo_movimiento: "GANANCIA",
+          puntos: 320,
+          fecha: "2026-04-12 09:00:00",
+        },
+        {
+          id: 4,
+          usuario_cc: "3121706301",
+          tipo_movimiento: "CANJE",
+          puntos: -150,
+          fecha: "2026-04-25 14:00:00",
+        },
+        {
+          id: 5,
+          usuario_cc: "3138770764",
+          tipo_movimiento: "GANANCIA",
+          puntos: 410,
+          fecha: "2026-03-30 11:45:00",
+        },
+        {
+          id: 6,
+          usuario_cc: "3145668617",
+          tipo_movimiento: "GANANCIA",
+          puntos: 90,
+          fecha: "2026-05-01 07:20:00",
+        },
+        {
+          id: 7,
+          usuario_cc: "3153240054",
+          tipo_movimiento: "GANANCIA",
+          puntos: 530,
+          fecha: "2026-04-05 16:00:00",
+        },
+        {
+          id: 8,
+          usuario_cc: "3153240054",
+          tipo_movimiento: "CANJE",
+          puntos: -200,
+          fecha: "2026-04-28 12:30:00",
+        },
+      ];
+      DB.beneficios_usuarios = [
+        {
+          id: 1,
+          usuario_cc: "3119880889",
+          beneficio_id: 1,
+          codigo_qr: "QR-001000",
+          fecha_redencion: "2026-05-10 09:00:00",
+          estado: "VENCIDO",
+        },
+        {
+          id: 2,
+          usuario_cc: "3119880889",
+          beneficio_id: 2,
+          codigo_qr: "QR-001001",
+          fecha_redencion: "2026-05-11 10:00:00",
+          estado: "ACTIVO",
+        },
+        {
+          id: 3,
+          usuario_cc: "3119880889",
+          beneficio_id: 3,
+          codigo_qr: "QR-001002",
+          fecha_redencion: "2026-05-12 11:00:00",
+          estado: "ACTIVO",
+        },
+        {
+          id: 4,
+          usuario_cc: "3121706301",
+          beneficio_id: 2,
+          codigo_qr: "QR-002-2026",
+          fecha_redencion: "2026-05-12 11:30:00",
+          estado: "ACTIVO",
+        },
+        {
+          id: 5,
+          usuario_cc: "3138770764",
+          beneficio_id: 1,
+          codigo_qr: "QR-003-2026",
+          fecha_redencion: "2026-04-20 08:00:00",
+          estado: "CANJEADO",
+        },
+        {
+          id: 6,
+          usuario_cc: "3153240054",
+          beneficio_id: 4,
+          codigo_qr: "QR-004-2026",
+          fecha_redencion: "2026-05-18 15:00:00",
+          estado: "ACTIVO",
+        },
+        {
+          id: 7,
+          usuario_cc: "3153240054",
+          beneficio_id: 1,
+          codigo_qr: "QR-004-2027",
+          fecha_redencion: "2026-04-15 09:00:00",
+          estado: "VENCIDO",
+        },
+      ];
+
       function runSQL() {
         const sql = document.getElementById("sql-ed").value.trim();
         const res = document.getElementById("sql-result");
@@ -3568,39 +4490,73 @@ ORDER BY v.precio DESC;</textarea
         );
         if (!m) throw new Error("Solo SELECT soportado");
         let [, cols, tbl, alias, rest] = m;
-        alias = alias || tbl;
+        // Si el "alias" capturado es una palabra clave SQL, no es alias real
+        const KEYWORDS =
+          /^(JOIN|INNER|LEFT|RIGHT|FULL|WHERE|ORDER|GROUP|LIMIT|ON|AND|OR)$/i;
+        if (!alias || KEYWORDS.test(alias)) {
+          rest = (alias || "") + " " + rest;
+          alias = tbl;
+        }
         let rows = getTbl(tbl).map((r) => {
           const o = {};
           Object.keys(r).forEach((k) => (o[`${alias}.${k}`] = r[k]));
           return o;
         });
-        const jr =
-          /(?:INNER|LEFT|RIGHT)?\s*JOIN\s+(\w+)(?:\s+(\w+))?\s+ON\s+(\S+)\s*=\s*(\S+)/gi;
+
+        // Procesar todos los JOINs — regex más robusto
+        const joinRe =
+          /(?:INNER\s+|LEFT\s+|RIGHT\s+|FULL\s+)?JOIN\s+(\w+)(?:\s+(\w+))?\s+ON\s+(\S+)\s*=\s*(\S+)/gi;
         let jm;
-        while ((jm = jr.exec(rest)) !== null) {
-          const [, jt, ja, , lk, rk] = [...jm];
-          const a2 = ja || jt;
+        while ((jm = joinRe.exec(rest)) !== null) {
+          const jt = jm[1];
+          let ja = jm[2];
+          const lk = jm[3];
+          const rk = jm[4];
+          // Si el "alias" es ON o palabra clave, no es alias
+          if (!ja || KEYWORDS.test(ja)) ja = jt;
+          const a2 = ja;
           const jr2 = getTbl(jt).map((r) => {
             const o = {};
             Object.keys(r).forEach((k) => (o[`${a2}.${k}`] = r[k]));
             return o;
           });
-          rows = rows.flatMap((lr) =>
-            jr2
-              .filter((jr) => resCol(lk, lr) === resCol(rk, jr))
-              .map((jr) => ({ ...lr, ...jr })),
-          );
+          rows = rows.flatMap((lr) => {
+            const matched = jr2.filter((rr) => {
+              const lv = resCol(lk, lr);
+              const rv = resCol(rk, rr);
+              return (
+                lv !== undefined &&
+                rv !== undefined &&
+                String(lv) === String(rv)
+              );
+            });
+            return matched.map((rr) => ({ ...lr, ...rr }));
+          });
         }
-        const wm = rest.match(/WHERE\s+(.+?)(?:ORDER|GROUP|LIMIT|$)/is);
+
+        const wm = rest.match(
+          /WHERE\s+(.+?)(?:\s+ORDER|\s+GROUP|\s+LIMIT|$)/is,
+        );
         if (wm) rows = rows.filter((r) => evalWhere(wm[1].trim(), r));
-        const om = rest.match(/ORDER\s+BY\s+(.+?)(?:LIMIT|$)/i);
+        const om = rest.match(/ORDER\s+BY\s+(.+?)(?:\s+LIMIT|$)/i);
         if (om) {
-          const [oc, ...od] = om[1].trim().split(/\s+/);
-          const desc = od.join(" ").toUpperCase() === "DESC";
+          const parts = om[1].trim().split(/\s+/);
+          const oc = parts[0];
+          const desc = parts.slice(1).join(" ").toUpperCase() === "DESC";
           rows.sort((a, b) => {
             const va = resCol(oc, a),
               vb = resCol(oc, b);
-            return desc ? (vb > va ? 1 : -1) : va > vb ? 1 : -1;
+            return desc
+              ? vb > va
+                ? 1
+                : vb < va
+                  ? -1
+                  : 0
+              : va > vb
+                ? 1
+                : va < vb
+                  ? -1
+                  : 0;
           });
         }
         const lm = rest.match(/LIMIT\s+(\d+)/i);
@@ -3683,16 +4639,15 @@ ORDER BY v.precio DESC;</textarea
         });
       }
       function updateAvailTables() {
-        // Solo las tablas que realmente existen en DB ahora mismo
-        const names = Object.keys(DB);
+        const names = [
+          ...new Set([...Object.keys(DB), ...S.tables.map((t) => t.name)]),
+        ];
         const el = document.getElementById("avail-tables");
-        if (el) el.textContent = names.join(", ") || "(ninguna)";
+        if (el) el.textContent = names.join(", ");
         const sm = document.getElementById("sm-avail-lbl");
-        if (sm) sm.textContent = names.join(", ") || "(ninguna)";
+        if (sm) sm.textContent = names.join(", ");
         const smh = document.getElementById("sm-tables-lbl");
-        if (smh)
-          smh.textContent =
-            names.length + " tabla" + (names.length !== 1 ? "s" : "");
+        if (smh) smh.textContent = names.length + " tablas";
       }
 
       /* ════════════════════════════════════════════
@@ -3788,6 +4743,572 @@ ORDER BY v.precio DESC;</textarea
         editor.value = `SELECT * FROM ${tname}`;
         setTimeout(runSQLModal, 80);
       }
+
+      /* ════════════════════════════════════════════
+   NOTIFICACIONES PUSH — VENCIMIENTO BENEFICIOS
+════════════════════════════════════════════ */
+      const PUSH_LOG = [];
+      let notifFilter = "all";
+      let selectedNotifUser = null;
+
+      // Genera datos de usuarios con beneficios y fechas de vencimiento
+      function buildNotifData() {
+        const CC_POOL = [
+          "1020345678",
+          "1035678912",
+          "1048234567",
+          "1061789023",
+          "1074523890",
+        ];
+        const NOMBRES = [
+          "Carlos García",
+          "María López",
+          "Pedro Martínez",
+          "Ana Gómez",
+          "Luis Torres",
+        ];
+        const COLORS = ["#CC0000", "#1A7BD4", "#27AE60", "#8E44AD", "#E67E22"];
+        const now = new Date();
+
+        // Intentar obtener datos reales de DB si existen
+        const usersDB =
+          DB["usuarios"] ||
+          DB[Object.keys(DB).find((k) => k.toLowerCase() === "usuarios")];
+        const benDB =
+          DB["beneficios"] ||
+          DB[Object.keys(DB).find((k) => k.toLowerCase() === "beneficios")];
+        const benUsDB =
+          DB["beneficios_usuarios"] ||
+          DB[
+            Object.keys(DB).find(
+              (k) => k.toLowerCase() === "beneficios_usuarios",
+            )
+          ];
+        const histDB =
+          DB["historial_puntos"] ||
+          DB[
+            Object.keys(DB).find((k) => k.toLowerCase() === "historial_puntos")
+          ];
+
+        const users = [];
+        const numU = usersDB ? Math.min(usersDB.length, 8) : 5;
+
+        for (let i = 0; i < numU; i++) {
+          const uRow = usersDB ? usersDB[i] : null;
+          const cc = uRow
+            ? uRow.cc || uRow.CC || Object.values(uRow)[0]
+            : CC_POOL[i];
+          const nombre = uRow
+            ? uRow.nombre || uRow.NOMBRE || NOMBRES[i]
+            : NOMBRES[i];
+
+          // Calcular puntos desde historial
+          let puntos = 0;
+          if (histDB) {
+            histDB
+              .filter((h) => {
+                const hcc = h.usuario_cc || h.USUARIO_CC || "";
+                return String(hcc) === String(cc);
+              })
+              .forEach((h) => {
+                puntos += +h.puntos || +h.PUNTOS || 0;
+              });
+          }
+          if (!puntos)
+            puntos =
+              [2450, 820, 3100, 540, 1890, 720, 4200, 310][i] || 1000 + i * 300;
+
+          // Generar 2-3 beneficios con vencimientos variados para demo
+          const diasBase = [-2, 1, 2, 3, 5, 7, 10, 15, 20, 30];
+          const numBen = 2 + Math.floor(Math.random() * 2);
+          const beneficios = [];
+          for (let b = 0; b < numBen; b++) {
+            const daysLeft = diasBase[(i * 2 + b) % diasBase.length];
+            const fechaVenc = new Date(now);
+            fechaVenc.setDate(fechaVenc.getDate() + daysLeft);
+            const tipos = [
+              "Bono Combustible $20.000",
+              "Descuento Tienda 10%",
+              "Cashback 5% Gasolina",
+              "Premio Cupón $50.000",
+              "Bono Gas Natural $15.000",
+            ];
+            const iconos = ["⛽", "🛍️", "💰", "🎫", "🔥"];
+            const idx = (i * 3 + b) % tipos.length;
+            beneficios.push({
+              id: b + 1,
+              tipo: tipos[idx],
+              icono: iconos[idx],
+              valor_descuento: [20000, 10, 5, 50000, 15000][idx],
+              fecha_fin: fechaVenc.toISOString().split("T")[0],
+              dias_restantes: daysLeft,
+              codigo_qr: `QR-${String(1000 + i * 10 + b).padStart(6, "0")}`,
+              estado: daysLeft < 0 ? "vencido" : "activo",
+            });
+          }
+
+          const urgencia = beneficios.some(
+            (b) => b.dias_restantes >= 0 && b.dias_restantes <= 1,
+          )
+            ? "urgent"
+            : beneficios.some(
+                  (b) => b.dias_restantes >= 0 && b.dias_restantes <= 3,
+                )
+              ? "critical"
+              : beneficios.some(
+                    (b) => b.dias_restantes >= 0 && b.dias_restantes <= 7,
+                  )
+                ? "warn"
+                : "ok";
+
+          users.push({
+            cc,
+            nombre,
+            puntos,
+            beneficios,
+            urgencia,
+            color: COLORS[i % COLORS.length],
+            correo: uRow?.correo || `usuario${i + 1}@terpel.com`,
+            celular: uRow?.celular || `31${i + 1}0000000`,
+          });
+        }
+        return users;
+      }
+
+      function openNotifModal() {
+        document.getElementById("notif-modal").classList.add("open");
+        renderNotifUsers();
+        selectedNotifUser = null;
+        document.getElementById("notif-detail").innerHTML = `
+    <div class="nd-empty">
+      <div class="nd-empty-icon">👈</div>
+      <div style="font-size:13px;font-weight:700;">Selecciona un usuario</div>
+      <div style="font-size:11px;color:#aaa;">para ver sus beneficios y enviar notificaciones push</div>
+    </div>`;
+      }
+      function closeNotifModal() {
+        document.getElementById("notif-modal").classList.remove("open");
+      }
+
+      let _notifUsers = [];
+      function renderNotifUsers() {
+        _notifUsers = buildNotifData();
+        filterNotif(notifFilter, null);
+      }
+
+      function filterNotif(f, btn) {
+        notifFilter = f;
+        document
+          .querySelectorAll(".nu-filter-btn")
+          .forEach((b) => b.classList.remove("active"));
+        if (btn) btn.classList.add("active");
+        const filtered = _notifUsers.filter((u) => {
+          if (f === "all") return true;
+          if (f === "warn")
+            return (
+              u.urgencia === "warn" ||
+              u.urgencia === "critical" ||
+              u.urgencia === "urgent"
+            );
+          if (f === "critical")
+            return u.urgencia === "critical" || u.urgencia === "urgent";
+          if (f === "urgent") return u.urgencia === "urgent";
+          return true;
+        });
+        const list = document.getElementById("nu-list");
+        list.innerHTML = "";
+        if (!filtered.length) {
+          list.innerHTML =
+            '<div style="padding:20px;text-align:center;color:#bbb;font-size:11px;">Sin usuarios en este filtro</div>';
+          return;
+        }
+        filtered.forEach((u) => {
+          const div = document.createElement("div");
+          div.className =
+            "nu-row" + (selectedNotifUser?.cc === u.cc ? " selected" : "");
+          div.onclick = () => selectNotifUser(u);
+          const initials = u.nombre
+            .split(" ")
+            .map((w) => w[0])
+            .join("")
+            .slice(0, 2);
+          const urgBadge =
+            u.urgencia === "urgent"
+              ? `<span class="nu-badge badge-critical">🔴 HOY vence</span>`
+              : u.urgencia === "critical"
+                ? `<span class="nu-badge badge-critical">🚨 ≤3 días</span>`
+                : u.urgencia === "warn"
+                  ? `<span class="nu-badge badge-warn">⚠️ ≤7 días</span>`
+                  : `<span class="nu-badge badge-ok">✓ Al día</span>`;
+          const vencidos = u.beneficios.filter(
+            (b) => b.dias_restantes < 0,
+          ).length;
+          div.innerHTML = `
+      <div class="nu-avatar" style="background:${u.color};">${initials}</div>
+      <div class="nu-info">
+        <div class="nu-name">${u.nombre}</div>
+        <div class="nu-cc">CC: ${u.cc} · ${u.puntos.toLocaleString()} pts</div>
+        <div class="nu-badges">${urgBadge}${vencidos ? `<span class="nu-badge badge-expired">⌛ ${vencidos} vencido${vencidos > 1 ? "s" : ""}</span>` : ""}</div>
+      </div>`;
+          list.appendChild(div);
+        });
+      }
+
+      function selectNotifUser(u) {
+        selectedNotifUser = u;
+        // Re-render list to update selected state
+        document
+          .querySelectorAll(".nu-row")
+          .forEach((r) => r.classList.remove("selected"));
+        event.currentTarget?.classList.add("selected");
+        // Build detail panel
+        const initials = u.nombre
+          .split(" ")
+          .map((w) => w[0])
+          .join("")
+          .slice(0, 2);
+        const benCards = u.beneficios
+          .map((b) => {
+            const d = b.dias_restantes;
+            const dayLabel =
+              d < 0
+                ? `<span class="nd-ben-days days-expired">⌛ Vencido hace ${Math.abs(d)} día${Math.abs(d) > 1 ? "s" : ""}</span>`
+                : d === 0
+                  ? `<span class="nd-ben-days days-critical">🔴 Vence HOY</span>`
+                  : d <= 1
+                    ? `<span class="nd-ben-days days-critical">🔴 Vence en ${d} día</span>`
+                    : d <= 3
+                      ? `<span class="nd-ben-days days-critical">🚨 Vence en ${d} días</span>`
+                      : d <= 7
+                        ? `<span class="nd-ben-days days-warn">⚠️ Vence en ${d} días</span>`
+                        : `<span class="nd-ben-days days-ok">✓ Vence en ${d} días</span>`;
+            return `
+      <div class="nd-ben-card">
+        <div class="nd-ben-icon">${b.icono}</div>
+        <div class="nd-ben-info">
+          <div class="nd-ben-name">${b.tipo}</div>
+          <div class="nd-ben-det">Código: ${b.codigo_qr} · Fecha fin: ${b.fecha_fin}</div>
+          ${dayLabel}
+        </div>
+        <button class="push-send-btn" style="padding:5px 10px;font-size:10px;" onclick="sendPush('${u.cc}','${u.nombre}','${b.tipo}',${d})">
+          📲 Notificar
+        </button>
+      </div>`;
+          })
+          .join("");
+
+        const templates = [
+          {
+            label: "Vencimiento",
+            msg: `¡Hola ${u.nombre.split(" ")[0]}! Tu beneficio está por vencer. ¡Úsalo antes de que sea tarde!`,
+          },
+          {
+            label: "Urgente",
+            msg: `🔴 URGENTE: Tu beneficio vence muy pronto. Visita una estación Terpel y redímelo hoy.`,
+          },
+          {
+            label: "Recordatorio",
+            msg: `⛽ Recuerda que tienes ${u.puntos.toLocaleString()} puntos y beneficios activos en Vívelo Terpel.`,
+          },
+          { label: "Personalizado", msg: "" },
+        ];
+
+        document.getElementById("notif-detail").innerHTML = `
+    <div class="nd-user-card">
+      <div class="nd-avatar" style="background:${u.color};">${initials}</div>
+      <div class="nd-info">
+        <div class="nd-name">${u.nombre}</div>
+        <div class="nd-sub">CC: ${u.cc} · ${u.correo}</div>
+        <div class="nd-sub">${u.celular}</div>
+      </div>
+      <div style="text-align:right;">
+        <div class="nd-pts-lbl">Puntos</div>
+        <div class="nd-pts">${u.puntos.toLocaleString()}</div>
+      </div>
+    </div>
+    <div class="nd-benefits-title">Beneficios activos</div>
+    ${benCards}
+    <div class="nd-push-section">
+      <div class="nd-push-title">📲 Enviar notificación push</div>
+      <div class="push-template-row">
+        ${templates.map((t, i) => `<button class="push-tmpl${i === 0 ? " active" : ""}" onclick="setPushTemplate(this,'${t.msg.replace(/'/g, "&#39;")}')">${t.label}</button>`).join("")}
+      </div>
+      <textarea class="push-msg-input" id="push-msg-input" rows="3">${templates[0].msg}</textarea>
+      <div class="push-send-row">
+        <button class="push-send-btn" onclick="sendPushMsg('${u.cc}','${u.nombre}')">📲 Enviar a ${u.nombre.split(" ")[0]}</button>
+        <span style="font-size:10px;color:#aaa;">o</span>
+        <button class="push-send-btn all" onclick="sendAllCritical()">⚡ Enviar a todos críticos</button>
+      </div>
+      <div class="push-sent-log" id="push-log"></div>
+    </div>`;
+        renderPushLog();
+      }
+
+      function setPushTemplate(btn, msg) {
+        document
+          .querySelectorAll(".push-tmpl")
+          .forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        document.getElementById("push-msg-input").value = msg;
+      }
+
+      function sendPush(cc, nombre, beneficio, dias) {
+        const msg =
+          dias <= 0
+            ? `Tu beneficio "${beneficio}" venció. Contáctanos para renovarlo.`
+            : dias <= 1
+              ? `¡${beneficio} vence HOY! Visita una estación Terpel y redímelo ahora.`
+              : dias <= 3
+                ? `Tu beneficio "${beneficio}" vence en ${dias} días. ¡No lo pierdas!`
+                : `Recordatorio: "${beneficio}" vence en ${dias} días.`;
+        logPush(cc, nombre, msg, "ok");
+        showPhoneNotifPreview(nombre, msg, beneficio, dias);
+        toast(`✓ Push enviado a ${nombre}`, "ok");
+      }
+
+      function sendPushMsg(cc, nombre) {
+        const msg = document.getElementById("push-msg-input")?.value?.trim();
+        if (!msg) {
+          toast("Escribe un mensaje primero", "err");
+          return;
+        }
+        logPush(cc, nombre, msg, "ok");
+        showPhoneNotifPreview(nombre, msg, "Beneficio Terpel", null);
+        toast(`✓ Push enviado a ${nombre}`, "ok");
+      }
+
+      function showPhoneNotifPreview(nombre, msg, beneficio, dias) {
+        // Remove existing preview if any
+        const existing = document.getElementById("phone-notif-overlay");
+        if (existing) existing.remove();
+
+        const urgColor =
+          dias === null
+            ? "#CC0000"
+            : dias <= 0
+              ? "#6A1B9A"
+              : dias <= 1
+                ? "#CC0000"
+                : dias <= 3
+                  ? "#E65100"
+                  : "#1A7BD4";
+        const urgLabel =
+          dias === null
+            ? "Mensaje"
+            : dias <= 0
+              ? "VENCIDO"
+              : dias <= 1
+                ? "HOY"
+                : dias <= 3
+                  ? `${dias} DÍAS`
+                  : `${dias} DÍAS`;
+        const urgIcon =
+          dias === null
+            ? "📩"
+            : dias <= 0
+              ? "⌛"
+              : dias <= 1
+                ? "🔴"
+                : dias <= 3
+                  ? "🚨"
+                  : "⚠️";
+        const now = new Date();
+        const timeStr = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+
+        const overlay = document.createElement("div");
+        overlay.id = "phone-notif-overlay";
+        overlay.style.cssText =
+          "position:fixed;inset:0;z-index:900;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);";
+        overlay.innerHTML = `
+    <div style="display:flex;flex-direction:column;align-items:center;gap:16px;">
+      <!-- Close hint -->
+      <div style="color:rgba(255,255,255,.5);font-size:12px;">Clic fuera para cerrar</div>
+
+      <!-- Phone frame -->
+      <div style="
+        width:320px;
+        background:#0a0a0a;
+        border-radius:44px;
+        padding:14px;
+        box-shadow:0 0 0 2px #333, 0 0 0 4px #555, 0 30px 80px rgba(0,0,0,.8);
+        position:relative;
+      ">
+        <!-- Notch -->
+        <div style="width:90px;height:26px;background:#0a0a0a;border-radius:13px;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;gap:6px;border:1px solid #222;">
+          <div style="width:8px;height:8px;border-radius:50%;background:#1a1a1a;border:1px solid #333;"></div>
+          <div style="width:40px;height:6px;border-radius:3px;background:#1a1a1a;border:1px solid #333;"></div>
+        </div>
+
+        <!-- Status bar -->
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:0 10px 8px;font-size:10px;color:#aaa;font-family:system-ui;">
+          <span style="font-weight:700;">${timeStr}</span>
+          <div style="display:flex;gap:4px;align-items:center;">
+            <span>▲▲▲</span>
+            <span>WiFi</span>
+            <span style="background:#4CAF50;color:#fff;border-radius:3px;padding:1px 4px;font-size:9px;font-weight:700;">88%</span>
+          </div>
+        </div>
+
+        <!-- Lock screen wallpaper -->
+        <div style="
+          background:linear-gradient(160deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);
+          border-radius:28px;
+          padding:20px 14px 24px;
+          min-height:480px;
+          display:flex;
+          flex-direction:column;
+          gap:12px;
+        ">
+          <!-- Lock screen time -->
+          <div style="text-align:center;margin-bottom:4px;">
+            <div style="font-size:52px;font-weight:200;color:#fff;line-height:1;letter-spacing:-2px;">${timeStr}</div>
+            <div style="font-size:12px;color:rgba(255,255,255,.6);margin-top:4px;">Lunes, 25 de mayo</div>
+          </div>
+
+          <!-- Notification card -->
+          <div style="
+            background:rgba(30,30,40,.92);
+            backdrop-filter:blur(20px);
+            border-radius:16px;
+            padding:12px 14px;
+            border:1px solid rgba(255,255,255,.1);
+            box-shadow:0 4px 20px rgba(0,0,0,.4);
+          ">
+            <!-- App header -->
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+              <div style="width:28px;height:28px;border-radius:8px;background:#CC0000;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;color:#fff;flex-shrink:0;">T</div>
+              <div style="flex:1;">
+                <div style="font-size:11px;font-weight:700;color:#fff;">Vívelo Terpel</div>
+                <div style="font-size:9px;color:rgba(255,255,255,.4);">Beneficios · ahora</div>
+              </div>
+              <div style="
+                background:${urgColor};
+                color:#fff;font-size:9px;font-weight:800;
+                padding:2px 7px;border-radius:8px;
+              ">${urgLabel}</div>
+            </div>
+
+            <!-- Notification title -->
+            <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:5px;line-height:1.3;">
+              ${urgIcon} Hola ${nombre.split(" ")[0]}, tienes un aviso
+            </div>
+            <!-- Notification body -->
+            <div style="font-size:11px;color:rgba(255,255,255,.75);line-height:1.5;margin-bottom:10px;">
+              ${msg}
+            </div>
+
+            <!-- Benefit chip -->
+            <div style="
+              display:inline-flex;align-items:center;gap:5px;
+              background:rgba(255,210,0,.15);border:1px solid rgba(255,210,0,.3);
+              border-radius:8px;padding:4px 10px;
+            ">
+              <span style="font-size:10px;">🎁</span>
+              <span style="font-size:10px;color:#FFD200;font-weight:700;">${beneficio}</span>
+            </div>
+
+            <!-- Action buttons -->
+            <div style="display:flex;gap:8px;margin-top:10px;">
+              <div style="flex:1;background:#CC0000;border-radius:10px;padding:7px 0;text-align:center;font-size:11px;font-weight:700;color:#fff;cursor:default;">
+                Ver beneficio
+              </div>
+              <div style="flex:1;background:rgba(255,255,255,.1);border-radius:10px;padding:7px 0;text-align:center;font-size:11px;font-weight:600;color:rgba(255,255,255,.7);cursor:default;">
+                Cerrar
+              </div>
+            </div>
+          </div>
+
+          <!-- Terpel branding at bottom -->
+          <div style="margin-top:auto;text-align:center;">
+            <div style="width:32px;height:32px;background:#CC0000;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;color:#fff;margin:0 auto 6px;">T</div>
+            <div style="font-size:9px;color:rgba(255,255,255,.3);">deslizar para abrir</div>
+          </div>
+        </div>
+
+        <!-- Home indicator -->
+        <div style="width:100px;height:4px;background:#444;border-radius:2px;margin:10px auto 0;"></div>
+      </div>
+
+      <!-- Info text -->
+      <div style="
+        background:rgba(255,255,255,.08);
+        border:1px solid rgba(255,255,255,.15);
+        border-radius:10px;padding:10px 18px;
+        color:rgba(255,255,255,.8);font-size:11px;
+        text-align:center;max-width:320px;line-height:1.6;
+      ">
+        📲 Así se ve la notificación push en el celular del usuario
+      </div>
+    </div>
+  `;
+        overlay.addEventListener("click", (e) => {
+          if (e.target === overlay) overlay.remove();
+        });
+        document.body.appendChild(overlay);
+      }
+
+      function sendAllCritical() {
+        const critical = _notifUsers.filter(
+          (u) => u.urgencia === "critical" || u.urgencia === "urgent",
+        );
+        if (!critical.length) {
+          toast("No hay usuarios con beneficios críticos", "err");
+          return;
+        }
+        critical.forEach((u) => {
+          const benCrit = u.beneficios.filter(
+            (b) => b.dias_restantes >= 0 && b.dias_restantes <= 3,
+          );
+          benCrit.forEach((b) => {
+            const msg =
+              b.dias_restantes <= 1
+                ? `🔴 ¡${b.tipo} vence HOY, ${u.nombre.split(" ")[0]}! Redímelo en una estación Terpel.`
+                : `🚨 Quedan ${b.dias_restantes} días para que venza: ${b.tipo}. ¡Actúa ya!`;
+            logPush(u.cc, u.nombre, msg, "warn");
+          });
+        });
+        toast(`⚡ Push enviado a ${critical.length} usuarios críticos`, "ok");
+        renderPushLog();
+      }
+
+      function logPush(cc, nombre, msg, type) {
+        const now = new Date();
+        const t = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}:${String(now.getSeconds()).padStart(2, "0")}`;
+        PUSH_LOG.unshift({ t, cc, nombre, msg, type });
+        if (PUSH_LOG.length > 30) PUSH_LOG.pop();
+        renderPushLog();
+      }
+
+      function renderPushLog() {
+        const el = document.getElementById("push-log");
+        if (!el) return;
+        if (!PUSH_LOG.length) {
+          el.innerHTML =
+            '<span style="font-size:10px;color:#555;">Sin envíos aún...</span>';
+          return;
+        }
+        el.innerHTML = PUSH_LOG.slice(0, 10)
+          .map(
+            (l) =>
+              `<div class="push-log-item">
+      <span class="pli-time">${l.t}</span>
+      <span class="${l.type === "ok" ? "pli-ok" : "pli-warn"}">▶</span>
+      <span class="pli-name">${l.nombre}</span>
+      <span style="color:#666;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${l.msg}</span>
+    </div>`,
+          )
+          .join("");
+      }
+
+      // Close notif on backdrop
+      document.addEventListener("DOMContentLoaded", () => {
+        document
+          .getElementById("notif-modal")
+          .addEventListener("click", (e) => {
+            if (e.target === document.getElementById("notif-modal"))
+              closeNotifModal();
+          });
+      });
 
       /* ════════════════════════════════════════════
    CONTEXT MENU
@@ -3900,165 +5421,90 @@ ORDER BY v.precio DESC;</textarea
             const d = JSON.parse(ev.target.result);
             if (d.tables) {
               S.tables = d.tables;
-
-              // ── PASO 1: Limpiar COMPLETAMENTE el DB anterior ──
-              // Solo conservar tablas hardcodeadas base si NO hay tablas importadas con el mismo nombre
-              // Pero si se importa, borramos todo y solo dejamos las del JSON
-              Object.keys(DB).forEach((k) => delete DB[k]);
-
-              // ── PASO 2: Detectar claves PK VARCHAR (como 'cc') para generarlas bien ──
-              // Primero generamos un pool de CCs que usaremos consistentemente entre tablas
-              const CC_POOL = [
-                "1020345678",
-                "1035678912",
-                "1048234567",
-                "1061789023",
-                "1074523890",
-              ];
-              const NOMBRES = [
-                "Carlos García",
-                "María López",
-                "Pedro Martínez",
-                "Ana Gómez",
-                "Luis Torres",
-              ];
-
-              // Identificar qué campos son FK que apuntan a CC de otra tabla
-              // Estrategia: si un campo tiene tipo VARCHAR y su nombre contiene 'cc' o termina en '_cc' o 'usuario_cc'
-              // lo tratamos como una cédula y usamos el mismo CC_POOL para que los JOINs funcionen
-              function esCampoCC(nombre) {
-                const n = nombre.toLowerCase();
-                return (
-                  n === "cc" ||
-                  n.endsWith("_cc") ||
-                  n.includes("usuario_cc") ||
-                  n.includes("cedula") ||
-                  n.includes("cédula")
-                );
-              }
-
-              // ── PASO 3: Generar datos de muestra coherentes por tabla ──
+              // Seed DB with sample data for each imported table so SQL works
               d.tables.forEach((t) => {
                 const tname = t.name;
-                const rows = [];
-                for (let i = 0; i < 5; i++) {
-                  const row = {};
-                  t.fields.forEach((f) => {
-                    const fn = f.name;
-                    const fl = fn.toLowerCase();
-
-                    // --- PK ---
-                    if (f.pk) {
-                      if (f.type === "VARCHAR" || esCampoCC(fn)) {
-                        // PK VARCHAR (ej: cc en usuarios) → usar CC real
-                        row[fn] = CC_POOL[i];
+                if (
+                  !DB[tname] &&
+                  !DB[
+                    Object.keys(DB).find(
+                      (k) => k.toLowerCase() === tname.toLowerCase(),
+                    ) || ""
+                  ]
+                ) {
+                  // Generate 5 sample rows based on field types
+                  const rows = [];
+                  for (let i = 1; i <= 5; i++) {
+                    const row = {};
+                    t.fields.forEach((f) => {
+                      const n = f.name;
+                      if (f.pk) {
+                        row[n] = i;
+                      } else if (f.type === "INT") {
+                        row[n] = Math.floor(Math.random() * 1000) + 1;
+                      } else if (f.type === "DECIMAL" || f.type === "FLOAT") {
+                        row[n] = +(Math.random() * 10000).toFixed(2);
+                      } else if (f.type === "DATE") {
+                        row[n] =
+                          `2026-0${Math.floor(Math.random() * 9) + 1}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, "0")}`;
+                      } else if (f.type === "DATETIME") {
+                        row[n] =
+                          `2026-05-${String(i).padStart(2, "0")} 10:00:00`;
+                      } else if (f.type === "BOOLEAN") {
+                        row[n] = i % 2 === 0;
                       } else {
-                        // PK INT normal → secuencial
-                        row[fn] = i + 1;
+                        // VARCHAR — use field name as hint
+                        if (n.includes("cc") || n.includes("usuario_cc")) {
+                          row[n] =
+                            "CC" + String(10000000 + i * 1234567).slice(0, 10);
+                        } else if (n.includes("nombre")) {
+                          row[n] = [
+                            "Carlos García",
+                            "María López",
+                            "Pedro Martínez",
+                            "Ana Gómez",
+                            "Luis Torres",
+                          ][i - 1];
+                        } else if (n.includes("correo")) {
+                          row[n] = `usuario${i}@terpel.com`;
+                        } else if (n.includes("celular")) {
+                          row[n] =
+                            `31${i}${Math.floor(Math.random() * 9000000) + 1000000}`;
+                        } else if (n.includes("tipo")) {
+                          row[n] = [
+                            "ACUMULACION",
+                            "REDENCIÓN",
+                            "AJUSTE",
+                            "BONO",
+                            "RETIRO",
+                          ][i - 1];
+                        } else if (n.includes("estado")) {
+                          row[n] = [
+                            "activo",
+                            "activo",
+                            "pendiente",
+                            "redimido",
+                            "activo",
+                          ][i - 1];
+                        } else if (n.includes("comercio")) {
+                          row[n] = [
+                            "Terpel Norte",
+                            "Terpel Sur",
+                            "Terpel Centro",
+                            "Terpel Oeste",
+                            "Terpel Este",
+                          ][i - 1];
+                        } else {
+                          row[n] = `${n}_${i}`;
+                        }
                       }
-                    }
-                    // --- FK hacia CC (ej: usuario_cc en historial_puntos) ---
-                    else if (esCampoCC(fn) && f.type === "VARCHAR") {
-                      // Repartir: 5 filas referenciando los 5 CCs (garantiza JOINs)
-                      row[fn] = CC_POOL[i];
-                    }
-                    // --- FK INT (ej: beneficio_id) ---
-                    else if (fl.includes("_id") || fl.includes("id_")) {
-                      row[fn] = (i % 3) + 1;
-                    }
-                    // --- Tipos numéricos ---
-                    else if (f.type === "INT") {
-                      if (fl.includes("punto")) {
-                        row[fn] = [450, 820, 200, 630, 315][i];
-                      } else {
-                        row[fn] = Math.floor(Math.random() * 900) + 100;
-                      }
-                    } else if (f.type === "DECIMAL" || f.type === "FLOAT") {
-                      row[fn] = +(Math.random() * 50000 + 5000).toFixed(2);
-                    }
-                    // --- Fechas ---
-                    else if (f.type === "DATE") {
-                      const mes = String(i + 1).padStart(2, "0");
-                      row[fn] = `2026-${mes}-15`;
-                    } else if (f.type === "DATETIME") {
-                      row[fn] =
-                        `2026-05-${String(i + 1).padStart(2, "0")} 10:${String(i * 10).padStart(2, "0")}:00`;
-                    } else if (f.type === "BOOLEAN") {
-                      row[fn] = i % 2 === 0 ? "true" : "false";
-                    }
-                    // --- VARCHAR por nombre de campo ---
-                    else {
-                      if (fl.includes("nombre")) {
-                        row[fn] = NOMBRES[i];
-                      } else if (
-                        fl.includes("correo") ||
-                        fl.includes("email")
-                      ) {
-                        row[fn] = `usuario${i + 1}@terpel.com`;
-                      } else if (
-                        fl.includes("celular") ||
-                        fl.includes("telefono")
-                      ) {
-                        row[fn] =
-                          `31${i + 1}${String(Math.floor(Math.random() * 9000000) + 1000000)}`;
-                      } else if (
-                        fl.includes("tipo_mov") ||
-                        fl === "tipo_movimiento"
-                      ) {
-                        row[fn] = [
-                          "ACUMULACION",
-                          "REDENCION",
-                          "AJUSTE",
-                          "BONO",
-                          "RETIRO",
-                        ][i];
-                      } else if (fl.includes("tipo")) {
-                        row[fn] = [
-                          "Descuento",
-                          "Bono",
-                          "Cashback",
-                          "Premio",
-                          "Cupon",
-                        ][i];
-                      } else if (fl.includes("estado")) {
-                        row[fn] = [
-                          "activo",
-                          "activo",
-                          "pendiente",
-                          "redimido",
-                          "activo",
-                        ][i];
-                      } else if (fl.includes("comercio")) {
-                        row[fn] = [
-                          "Terpel Norte",
-                          "Terpel Sur",
-                          "Terpel Centro",
-                          "Terpel Oeste",
-                          "Terpel Este",
-                        ][i];
-                      } else if (fl.includes("codigo") || fl.includes("qr")) {
-                        row[fn] =
-                          `QR-${String(1000 + i * 37).padStart(6, "0")}`;
-                      } else if (fl.includes("dia")) {
-                        row[fn] = [
-                          "Lunes-Viernes",
-                          "Lunes-Sabado",
-                          "Todos",
-                          "Fines de semana",
-                          "Lunes-Viernes",
-                        ][i];
-                      } else {
-                        row[fn] = `${fn}_${i + 1}`;
-                      }
-                    }
-                  });
-                  rows.push(row);
+                    });
+                    rows.push(row);
+                  }
+                  DB[tname] = rows;
                 }
-                DB[tname] = rows;
               });
             }
-
-            // ── Limpiar canvas y cargar nodos/conexiones ──
             document.getElementById("nodes-layer").innerHTML = "";
             S.nodes = [];
             S.conns = [];
@@ -4073,11 +5519,7 @@ ORDER BY v.precio DESC;</textarea
             renderTablesList();
             updateStats();
             updateAvailTables();
-            const ntablas = d.tables ? d.tables.length : 0;
-            toast(
-              `✓ Importado — ${ntablas} tabla${ntablas !== 1 ? "s" : ""} cargadas con datos de muestra`,
-              "ok",
-            );
+            toast("Importado ✓ — tablas disponibles en SQL", "ok");
           } catch (err) {
             toast("Error al importar: " + err.message, "err");
           }
@@ -4423,7 +5865,6 @@ ORDER BY v.precio DESC;</textarea
 
         hideHint();
         updateStats();
-        updateAvailTables();
         setTimeout(drawMinimap, 300);
       })();
 
