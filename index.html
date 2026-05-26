@@ -3100,23 +3100,19 @@
             <div style="font-size: 10px; color: var(--text-dim)">
               Consultas SQL sobre las tablas del flujo
             </div>
-            <textarea class="sql-editor" id="sql-ed" spellcheck="false">
-SELECT v.cod_venta, e.nombre, p.descripcion, v.cantidad, v.precio
-FROM venta v
-JOIN Empleado e ON v.cod_empleado = e.Cod_empleado
-JOIN productos p ON v.cod_prod = p.Cod_producto
-WHERE v.precio > 50000
-ORDER BY v.precio DESC;</textarea
-            >
+            <textarea
+              class="sql-editor"
+              id="sql-ed"
+              spellcheck="false"
+              placeholder="Selecciona una tabla para generar una consulta…"
+            ></textarea>
             <button class="run-btn" onclick="runSQL()">
               ▶ Ejecutar consulta
             </button>
             <div id="sql-result"></div>
             <div style="font-size: 9px; color: var(--text-dim)">
               Tablas:
-              <span id="avail-tables" style="color: var(--yellow)"
-                >venta, Empleado, productos, registros</span
-              >
+              <span id="avail-tables" style="color: var(--yellow)">—</span>
             </div>
           </div>
           <div class="rp-pane" id="rp-stats">
@@ -3917,6 +3913,38 @@ ORDER BY v.precio DESC;</textarea
               { name: "celular", type: "VARCHAR", pk: false },
               { name: "correo", type: "VARCHAR", pk: false },
             ],
+            rows: [
+              {
+                cc: "3119880889",
+                nombre: "Carlos García",
+                celular: "3119880889",
+                correo: "usuario1@terpel.com",
+              },
+              {
+                cc: "3121706301",
+                nombre: "María López",
+                celular: "3121706301",
+                correo: "usuario2@terpel.com",
+              },
+              {
+                cc: "3138770764",
+                nombre: "Pedro Martínez",
+                celular: "3138770764",
+                correo: "usuario3@terpel.com",
+              },
+              {
+                cc: "3145668617",
+                nombre: "Ana Gómez",
+                celular: "3145668617",
+                correo: "usuario4@terpel.com",
+              },
+              {
+                cc: "3153240054",
+                nombre: "Luis Torres",
+                celular: "3153240054",
+                correo: "usuario5@terpel.com",
+              },
+            ],
           },
           {
             id: "t2",
@@ -3932,6 +3960,58 @@ ORDER BY v.precio DESC;</textarea
               { name: "dias_permitidos", type: "VARCHAR", pk: false },
               { name: "comercio", type: "VARCHAR", pk: false },
             ],
+            rows: [
+              {
+                id: 1,
+                tipo: "Bono Combustible $20.000",
+                valor_descuento: 20000,
+                puntos_requeridos: 400,
+                fecha_inicio: "2026-01-01",
+                fecha_fin: "2026-05-23",
+                dias_permitidos: "Todos",
+                comercio: "Terpel",
+              },
+              {
+                id: 2,
+                tipo: "Descuento Tienda 10%",
+                valor_descuento: 0.1,
+                puntos_requeridos: 200,
+                fecha_inicio: "2026-03-01",
+                fecha_fin: "2026-05-26",
+                dias_permitidos: "Todos",
+                comercio: "Tienda Terpel",
+              },
+              {
+                id: 3,
+                tipo: "Cashback 5% Gasolina",
+                valor_descuento: 0.05,
+                puntos_requeridos: 300,
+                fecha_inicio: "2026-01-01",
+                fecha_fin: "2026-05-27",
+                dias_permitidos: "Todos",
+                comercio: "Terpel",
+              },
+              {
+                id: 4,
+                tipo: "Car wash gratis",
+                valor_descuento: 0,
+                puntos_requeridos: 300,
+                fecha_inicio: "2026-01-01",
+                fecha_fin: "2026-06-30",
+                dias_permitidos: "Sabado,Domingo",
+                comercio: "Terpel",
+              },
+              {
+                id: 5,
+                tipo: "Cafe gratis",
+                valor_descuento: 0,
+                puntos_requeridos: 150,
+                fecha_inicio: "2026-01-01",
+                fecha_fin: "2026-12-31",
+                dias_permitidos: "Todos",
+                comercio: "Tienda Terpel",
+              },
+            ],
           },
           {
             id: "t3",
@@ -3943,6 +4023,64 @@ ORDER BY v.precio DESC;</textarea
               { name: "tipo_movimiento", type: "VARCHAR", pk: false },
               { name: "puntos", type: "INT", pk: false },
               { name: "fecha", type: "DATETIME", pk: false },
+            ],
+            rows: [
+              {
+                id: 1,
+                usuario_cc: "3119880889",
+                tipo_movimiento: "GANANCIA",
+                puntos: 250,
+                fecha: "2026-04-10 08:30:00",
+              },
+              {
+                id: 2,
+                usuario_cc: "3119880889",
+                tipo_movimiento: "GANANCIA",
+                puntos: 180,
+                fecha: "2026-04-20 10:15:00",
+              },
+              {
+                id: 3,
+                usuario_cc: "3121706301",
+                tipo_movimiento: "GANANCIA",
+                puntos: 320,
+                fecha: "2026-04-12 09:00:00",
+              },
+              {
+                id: 4,
+                usuario_cc: "3121706301",
+                tipo_movimiento: "CANJE",
+                puntos: -150,
+                fecha: "2026-04-25 14:00:00",
+              },
+              {
+                id: 5,
+                usuario_cc: "3138770764",
+                tipo_movimiento: "GANANCIA",
+                puntos: 410,
+                fecha: "2026-03-30 11:45:00",
+              },
+              {
+                id: 6,
+                usuario_cc: "3145668617",
+                tipo_movimiento: "GANANCIA",
+                puntos: 90,
+                fecha: "2026-05-01 07:20:00",
+              },
+              {
+                id: 7,
+                usuario_cc: "3153240054",
+                tipo_movimiento: "GANANCIA",
+                puntos: 530,
+                fecha: "2026-04-05 16:00:00",
+              },
+              {
+                id: 8,
+                usuario_cc: "3153240054",
+                tipo_movimiento: "CANJE",
+                puntos: -200,
+                fecha: "2026-04-28 12:30:00",
+              },
             ],
           },
           {
@@ -3957,6 +4095,64 @@ ORDER BY v.precio DESC;</textarea
               { name: "fecha_redencion", type: "DATETIME", pk: false },
               { name: "estado", type: "VARCHAR", pk: false },
             ],
+            rows: [
+              {
+                id: 1,
+                usuario_cc: "3119880889",
+                beneficio_id: 1,
+                codigo_qr: "QR-001000",
+                fecha_redencion: "2026-05-10 09:00:00",
+                estado: "VENCIDO",
+              },
+              {
+                id: 2,
+                usuario_cc: "3119880889",
+                beneficio_id: 2,
+                codigo_qr: "QR-001001",
+                fecha_redencion: "2026-05-11 10:00:00",
+                estado: "ACTIVO",
+              },
+              {
+                id: 3,
+                usuario_cc: "3119880889",
+                beneficio_id: 3,
+                codigo_qr: "QR-001002",
+                fecha_redencion: "2026-05-12 11:00:00",
+                estado: "ACTIVO",
+              },
+              {
+                id: 4,
+                usuario_cc: "3121706301",
+                beneficio_id: 2,
+                codigo_qr: "QR-002-2026",
+                fecha_redencion: "2026-05-12 11:30:00",
+                estado: "ACTIVO",
+              },
+              {
+                id: 5,
+                usuario_cc: "3138770764",
+                beneficio_id: 1,
+                codigo_qr: "QR-003-2026",
+                fecha_redencion: "2026-04-20 08:00:00",
+                estado: "CANJEADO",
+              },
+              {
+                id: 6,
+                usuario_cc: "3153240054",
+                beneficio_id: 4,
+                codigo_qr: "QR-004-2026",
+                fecha_redencion: "2026-05-18 15:00:00",
+                estado: "ACTIVO",
+              },
+              {
+                id: 7,
+                usuario_cc: "3153240054",
+                beneficio_id: 1,
+                codigo_qr: "QR-004-2027",
+                fecha_redencion: "2026-04-15 09:00:00",
+                estado: "VENCIDO",
+              },
+            ],
           },
         ],
       };
@@ -3964,7 +4160,7 @@ ORDER BY v.precio DESC;</textarea
       const S = {
         nodes: [],
         conns: [],
-        tables: PRESET_JSON.tables.map((t) => ({ ...t, rows: [] })),
+        tables: PRESET_JSON.tables.map((t) => ({ ...t, rows: t.rows || [] })),
         selNode: null,
         selConn: null,
         scale: 1,
@@ -4105,6 +4301,65 @@ ORDER BY v.precio DESC;</textarea
       function selectTableInPane(tId) {
         _selectedTableId = tId;
         renderTablesList();
+        // Generate contextual SQL for the selected table and switch to SQL tab
+        const tbl = S.tables.find((t) => t.id === tId);
+        if (tbl) {
+          const ed = document.getElementById("sql-ed");
+          if (ed) ed.value = generateTableSQL(tbl);
+          // Switch right panel to SQL tab
+          const sqlTabEl = document.querySelector(".rp-tab:nth-child(2)");
+          if (sqlTabEl) rpTab("query", sqlTabEl);
+        }
+      }
+
+      function generateTableSQL(tbl) {
+        const tname = tbl.name;
+        const alias = tname.substring(0, 1).toLowerCase();
+        const fields = tbl.fields || [];
+        // Build SELECT columns
+        let cols;
+        if (fields.length === 0) {
+          cols = "*";
+        } else {
+          cols = fields.map((f) => `${alias}.${f.name}`).join(", ");
+        }
+        // Find PK field for ORDER BY hint
+        const pk = fields.find((f) => f.pk);
+        // Find numeric fields for WHERE examples
+        const numField = fields.find(
+          (f) =>
+            f.type &&
+            (f.type.toLowerCase().includes("int") ||
+              f.type.toLowerCase().includes("num") ||
+              f.type.toLowerCase().includes("decimal") ||
+              f.type.toLowerCase().includes("float")),
+        );
+
+        let sql = `-- Consulta generada para la tabla: ${tname}\n`;
+        sql += `SELECT ${cols}\nFROM ${tname} ${alias}`;
+
+        // Add WHERE example if there's a numeric field (not PK)
+        const whereField = fields.find(
+          (f) =>
+            !f.pk &&
+            f.type &&
+            (f.type.toLowerCase().includes("int") ||
+              f.type.toLowerCase().includes("num") ||
+              f.type.toLowerCase().includes("decimal") ||
+              f.type.toLowerCase().includes("float")),
+        );
+        if (whereField) {
+          sql += `\nWHERE ${alias}.${whereField.name} > 0`;
+        }
+
+        // ORDER BY PK or first field
+        if (pk) {
+          sql += `\nORDER BY ${alias}.${pk.name} DESC`;
+        } else if (fields.length > 0) {
+          sql += `\nORDER BY ${alias}.${fields[0].name} DESC`;
+        }
+        sql += `\nLIMIT 100;`;
+        return sql;
       }
       function rpTab(t, el) {
         document
@@ -4644,6 +4899,8 @@ ORDER BY v.precio DESC;</textarea
             btn.textContent = "← Todas";
             btn.onclick = () => {
               _selectedTableId = null;
+              const ed = document.getElementById("sql-ed");
+              if (ed) ed.value = "";
               renderTablesList();
             };
             header.insertBefore(btn, header.querySelector(".tp-btn"));
@@ -4919,285 +5176,10 @@ ORDER BY v.precio DESC;</textarea
       /* ════════════════════════════════════════════
    SQL ENGINE
 ════════════════════════════════════════════ */
-      const DB = {
-        venta: [
-          {
-            cod_venta: 1,
-            cod_prod: 101,
-            cantidad: 2,
-            precio: 85000,
-            cod_empleado: 1,
-          },
-          {
-            cod_venta: 2,
-            cod_prod: 102,
-            cantidad: 5,
-            precio: 120000,
-            cod_empleado: 2,
-          },
-          {
-            cod_venta: 3,
-            cod_prod: 101,
-            cantidad: 1,
-            precio: 85000,
-            cod_empleado: 1,
-          },
-          {
-            cod_venta: 4,
-            cod_prod: 103,
-            cantidad: 3,
-            precio: 200000,
-            cod_empleado: 3,
-          },
-          {
-            cod_venta: 5,
-            cod_prod: 102,
-            cantidad: 2,
-            precio: 35000,
-            cod_empleado: 2,
-          },
-        ],
-        Empleado: [
-          {
-            Cod_empleado: 1,
-            nombre: "Carlos García",
-            dto: "Ventas",
-            fecha_nac: "1985-03-15",
-          },
-          {
-            Cod_empleado: 2,
-            nombre: "María López",
-            dto: "Marketing",
-            fecha_nac: "1990-07-22",
-          },
-          {
-            Cod_empleado: 3,
-            nombre: "Pedro Martínez",
-            dto: "Operaciones",
-            fecha_nac: "1988-11-30",
-          },
-        ],
-        productos: [
-          { Cod_producto: 101, descripcion: "Gasolina Corriente", stock: 1000 },
-          { Cod_producto: 102, descripcion: "ACPM Diesel", stock: 800 },
-          { Cod_producto: 103, descripcion: "Gas Natural", stock: 500 },
-        ],
-        registros: [
-          {
-            fecha_v: "2026-05-01",
-            cod_producto: 101,
-            descripcion: "Venta gasolina",
-          },
-          {
-            fecha_v: "2026-05-02",
-            cod_producto: 102,
-            descripcion: "Venta diesel",
-          },
-        ],
-      };
-      DB.ventas = DB.venta;
-
-      // Tablas del proyecto Vívelo Terpel
-      DB.usuarios = [
-        {
-          cc: "3119880889",
-          nombre: "Carlos García",
-          celular: "3119880889",
-          correo: "usuario1@terpel.com",
-        },
-        {
-          cc: "3121706301",
-          nombre: "María López",
-          celular: "3121706301",
-          correo: "usuario2@terpel.com",
-        },
-        {
-          cc: "3138770764",
-          nombre: "Pedro Martínez",
-          celular: "3138770764",
-          correo: "usuario3@terpel.com",
-        },
-        {
-          cc: "3145668617",
-          nombre: "Ana Gómez",
-          celular: "3145668617",
-          correo: "usuario4@terpel.com",
-        },
-        {
-          cc: "3153240054",
-          nombre: "Luis Torres",
-          celular: "3153240054",
-          correo: "usuario5@terpel.com",
-        },
-      ];
-      DB.beneficios = [
-        {
-          id: 1,
-          tipo: "Bono Combustible $20.000",
-          valor_descuento: 20000,
-          puntos_requeridos: 400,
-          fecha_inicio: "2026-01-01",
-          fecha_fin: "2026-05-23",
-          dias_permitidos: "Todos",
-          comercio: "Terpel",
-        },
-        {
-          id: 2,
-          tipo: "Descuento Tienda 10%",
-          valor_descuento: 0.1,
-          puntos_requeridos: 200,
-          fecha_inicio: "2026-03-01",
-          fecha_fin: "2026-05-26",
-          dias_permitidos: "Todos",
-          comercio: "Tienda Terpel",
-        },
-        {
-          id: 3,
-          tipo: "Cashback 5% Gasolina",
-          valor_descuento: 0.05,
-          puntos_requeridos: 300,
-          fecha_inicio: "2026-01-01",
-          fecha_fin: "2026-05-27",
-          dias_permitidos: "Todos",
-          comercio: "Terpel",
-        },
-        {
-          id: 4,
-          tipo: "Car wash gratis",
-          valor_descuento: 0,
-          puntos_requeridos: 300,
-          fecha_inicio: "2026-01-01",
-          fecha_fin: "2026-06-30",
-          dias_permitidos: "Sabado,Domingo",
-          comercio: "Terpel",
-        },
-        {
-          id: 5,
-          tipo: "Cafe gratis",
-          valor_descuento: 0,
-          puntos_requeridos: 150,
-          fecha_inicio: "2026-01-01",
-          fecha_fin: "2026-12-31",
-          dias_permitidos: "Todos",
-          comercio: "Tienda Terpel",
-        },
-      ];
-      DB.historial_puntos = [
-        {
-          id: 1,
-          usuario_cc: "3119880889",
-          tipo_movimiento: "GANANCIA",
-          puntos: 250,
-          fecha: "2026-04-10 08:30:00",
-        },
-        {
-          id: 2,
-          usuario_cc: "3119880889",
-          tipo_movimiento: "GANANCIA",
-          puntos: 180,
-          fecha: "2026-04-20 10:15:00",
-        },
-        {
-          id: 3,
-          usuario_cc: "3121706301",
-          tipo_movimiento: "GANANCIA",
-          puntos: 320,
-          fecha: "2026-04-12 09:00:00",
-        },
-        {
-          id: 4,
-          usuario_cc: "3121706301",
-          tipo_movimiento: "CANJE",
-          puntos: -150,
-          fecha: "2026-04-25 14:00:00",
-        },
-        {
-          id: 5,
-          usuario_cc: "3138770764",
-          tipo_movimiento: "GANANCIA",
-          puntos: 410,
-          fecha: "2026-03-30 11:45:00",
-        },
-        {
-          id: 6,
-          usuario_cc: "3145668617",
-          tipo_movimiento: "GANANCIA",
-          puntos: 90,
-          fecha: "2026-05-01 07:20:00",
-        },
-        {
-          id: 7,
-          usuario_cc: "3153240054",
-          tipo_movimiento: "GANANCIA",
-          puntos: 530,
-          fecha: "2026-04-05 16:00:00",
-        },
-        {
-          id: 8,
-          usuario_cc: "3153240054",
-          tipo_movimiento: "CANJE",
-          puntos: -200,
-          fecha: "2026-04-28 12:30:00",
-        },
-      ];
-      DB.beneficios_usuarios = [
-        {
-          id: 1,
-          usuario_cc: "3119880889",
-          beneficio_id: 1,
-          codigo_qr: "QR-001000",
-          fecha_redencion: "2026-05-10 09:00:00",
-          estado: "VENCIDO",
-        },
-        {
-          id: 2,
-          usuario_cc: "3119880889",
-          beneficio_id: 2,
-          codigo_qr: "QR-001001",
-          fecha_redencion: "2026-05-11 10:00:00",
-          estado: "ACTIVO",
-        },
-        {
-          id: 3,
-          usuario_cc: "3119880889",
-          beneficio_id: 3,
-          codigo_qr: "QR-001002",
-          fecha_redencion: "2026-05-12 11:00:00",
-          estado: "ACTIVO",
-        },
-        {
-          id: 4,
-          usuario_cc: "3121706301",
-          beneficio_id: 2,
-          codigo_qr: "QR-002-2026",
-          fecha_redencion: "2026-05-12 11:30:00",
-          estado: "ACTIVO",
-        },
-        {
-          id: 5,
-          usuario_cc: "3138770764",
-          beneficio_id: 1,
-          codigo_qr: "QR-003-2026",
-          fecha_redencion: "2026-04-20 08:00:00",
-          estado: "CANJEADO",
-        },
-        {
-          id: 6,
-          usuario_cc: "3153240054",
-          beneficio_id: 4,
-          codigo_qr: "QR-004-2026",
-          fecha_redencion: "2026-05-18 15:00:00",
-          estado: "ACTIVO",
-        },
-        {
-          id: 7,
-          usuario_cc: "3153240054",
-          beneficio_id: 1,
-          codigo_qr: "QR-004-2027",
-          fecha_redencion: "2026-04-15 09:00:00",
-          estado: "VENCIDO",
-        },
-      ];
+      // DB solo contiene las tablas reales del proyecto.
+      // syncUserTablesToDB() siempre sincroniza desde S.tables antes de cada consulta,
+      // así los datos que ve el motor SQL son exactamente los que el usuario definió.
+      const DB = {};
 
       function runSQL() {
         const sql = document.getElementById("sql-ed").value.trim();
@@ -5313,16 +5295,10 @@ ORDER BY v.precio DESC;</textarea
         });
       }
       function syncUserTablesToDB() {
-        // S.tables are the tables the user defined in the panel.
-        // If they have rows stored, use those. If not, clear the DB entry so
-        // stale hardcoded data is never served for a user-defined table.
+        // Borrar todo y reconstruir desde S.tables para que DB refleje exactamente las tablas del usuario
+        Object.keys(DB).forEach((k) => delete DB[k]);
         S.tables.forEach((t) => {
           DB[t.name] = t.rows || [];
-          // Also remove any case-variant key that might shadow this table
-          Object.keys(DB).forEach((k) => {
-            if (k !== t.name && k.toLowerCase() === t.name.toLowerCase())
-              delete DB[k];
-          });
         });
       }
       function getTbl(n) {
@@ -5489,6 +5465,20 @@ ORDER BY v.precio DESC;</textarea
       }
 
       function quickQueryTable(tname) {
+        // Sync right panel SQL editor with this table's query
+        const tbl = S.tables.find((t) => t.name === tname);
+        const ed = document.getElementById("sql-ed");
+        if (ed) {
+          if (tbl) {
+            ed.value = generateTableSQL(tbl);
+          } else {
+            ed.value = `SELECT *\nFROM ${tname}\nLIMIT 100;`;
+          }
+        }
+        // Switch right panel to SQL tab
+        const sqlTabEl = document.querySelector(".rp-tab:nth-child(2)");
+        if (sqlTabEl) rpTab("query", sqlTabEl);
+        // Also open modal for quick execution
         openSQLModal();
         const editor = document.getElementById("sm-editor");
         editor.value = `SELECT * FROM ${tname}`;
@@ -7522,11 +7512,13 @@ ORDER BY v.precio DESC;</textarea
           try {
             const d = JSON.parse(ev.target.result);
             if (d.tables) {
-              // Merge imported table schemas into S.tables
-              S.tables = d.tables.map((t) => ({ ...t, rows: t.rows || [] }));
-              d.tables.forEach((t) => {
-                // If JSON has rows, use them; otherwise preserve existing DB data for that table
-                const existingRows =
+              // Merge: preserve existing rows in S.tables/DB, only override if JSON brings its own rows
+              const prevTables = S.tables || [];
+              S.tables = d.tables.map((t) => {
+                const prevState = prevTables.find(
+                  (st) => st.name.toLowerCase() === t.name.toLowerCase(),
+                );
+                const prevDB =
                   DB[t.name] ||
                   DB[
                     Object.keys(DB).find(
@@ -7534,10 +7526,16 @@ ORDER BY v.precio DESC;</textarea
                     )
                   ] ||
                   [];
-                const newRows = t.rows && t.rows.length ? t.rows : existingRows;
-                t.rows = newRows;
-                DB[t.name] = newRows;
-                // Remove any case-variant shadow keys to avoid duplicates
+                const savedRows =
+                  prevState && prevState.rows && prevState.rows.length
+                    ? prevState.rows
+                    : prevDB;
+                const finalRows = t.rows && t.rows.length ? t.rows : savedRows;
+                return { ...t, rows: finalRows };
+              });
+              // Sync DB from merged result
+              S.tables.forEach((t) => {
+                DB[t.name] = t.rows || [];
                 Object.keys(DB).forEach((k) => {
                   if (k !== t.name && k.toLowerCase() === t.name.toLowerCase())
                     delete DB[k];
@@ -7846,6 +7844,11 @@ ORDER BY v.precio DESC;</textarea
         // Hide right panel initially (no node selected)
         document.getElementById("right-panel").classList.add("rp-hidden");
 
+        // ── Seed DB from PRESET_JSON rows ──
+        PRESET_JSON.tables.forEach((t) => {
+          if (t.rows && t.rows.length) DB[t.name] = t.rows.slice();
+        });
+
         // ── Sync S.tables rows from DB (DB is now defined) ──
         S.tables.forEach((t) => {
           const dbRows =
@@ -7904,7 +7907,7 @@ ORDER BY v.precio DESC;</textarea
         updateAvailTables();
         hideHint();
         setTimeout(drawMinimap, 300);
-        toast("✓ Flujo Gemini cargado", "ok");
+        toast("✓ Flujo Vívelo Terpel cargado — datos reales listos", "ok");
       })();
 
       /* ════════════════════════════════════════════
