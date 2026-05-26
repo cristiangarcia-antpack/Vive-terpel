@@ -332,21 +332,21 @@
         gap: 4px;
         padding: 8px 10px;
         cursor: pointer;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
+        overflow: hidden;
       }
       .tbl-head:hover {
         background: #f5f5f5;
       }
       .tbl-head .tbl-name {
         flex: 1;
-        min-width: 0;
+        min-width: 60px;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
       }
       .tbl-head .tbl-cnt {
-        white-space: nowrap;
-        flex-shrink: 0;
+        display: none;
       }
       .tbl-dot {
         width: 7px;
@@ -4664,10 +4664,10 @@ ORDER BY v.precio DESC;</textarea
         <div class="tbl-dot" style="background:${t.color};"></div>
         <div class="tbl-name">${t.name}</div>
         <div class="tbl-cnt">${t.fields.length} campos · ${(t.rows || []).length} filas</div>
-        <button style="background:#1a7a4a;border:none;color:white;cursor:pointer;font-size:9px;padding:2px 6px;border-radius:4px;font-weight:700;" title="Insertar / ver datos reales" onclick="event.stopPropagation();openRowsModal('${t.id}')">Datos</button>
-        <button style="background:var(--red);border:none;color:white;cursor:pointer;font-size:9px;padding:2px 6px;border-radius:4px;font-weight:700;" title="Consultar tabla" onclick="event.stopPropagation();quickQueryTable('${t.name}')">SQL</button>
-        <button style="background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:11px;padding:0 2px;" onclick="event.stopPropagation();editTable('${t.id}')">✏️</button>
-        <button style="background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:11px;padding:0 2px;" onclick="event.stopPropagation();delTable('${t.id}')">🗑</button>
+        <button style="background:#1a7a4a;border:none;color:white;cursor:pointer;font-size:9px;padding:2px 6px;border-radius:4px;font-weight:700;flex-shrink:0;" title="Insertar / ver datos reales" onclick="event.stopPropagation();openRowsModal('${t.id}')">Datos</button>
+        <button style="background:var(--red);border:none;color:white;cursor:pointer;font-size:9px;padding:2px 6px;border-radius:4px;font-weight:700;flex-shrink:0;" title="Consultar tabla" onclick="event.stopPropagation();quickQueryTable('${t.name}')">SQL</button>
+        <button style="background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:11px;padding:0 2px;flex-shrink:0;" onclick="event.stopPropagation();editTable('${t.id}')">✏️</button>
+        <button style="background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:11px;padding:0 2px;flex-shrink:0;" onclick="event.stopPropagation();delTable('${t.id}')">🗑</button>
       </div>
       <div class="tbl-fields${isSelected ? " open" : ""}" id="tf-${t.id}">
         ${t.fields.map((f) => `<div class="tf-row">${f.pk ? '<span class="tf-pk">PK</span>' : ""}<span>${f.name}</span><span class="tf-type">${f.type}</span></div>`).join("")}
