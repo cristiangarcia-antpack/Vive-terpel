@@ -176,12 +176,32 @@
       /* ── LEFT PANEL ── */
       #left-panel {
         width: 220px;
+        min-width: 180px;
+        max-width: 480px;
         flex-shrink: 0;
         background: var(--surface);
         border-right: 1px solid var(--border2);
         display: flex;
         flex-direction: column;
         overflow: hidden;
+        position: relative;
+      }
+      /* ── LEFT PANEL RESIZE HANDLE ── */
+      #lp-resize-handle {
+        position: absolute;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        width: 5px;
+        cursor: col-resize;
+        z-index: 50;
+        background: transparent;
+        transition: background 0.15s;
+      }
+      #lp-resize-handle:hover,
+      #lp-resize-handle.dragging {
+        background: var(--red);
+        opacity: 0.5;
       }
       #lp-tabs {
         display: flex;
@@ -309,12 +329,24 @@
       .tbl-head {
         display: flex;
         align-items: center;
-        gap: 7px;
-        padding: 8px 12px;
+        gap: 4px;
+        padding: 8px 10px;
         cursor: pointer;
+        flex-wrap: wrap;
       }
       .tbl-head:hover {
         background: #f5f5f5;
+      }
+      .tbl-head .tbl-name {
+        flex: 1;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .tbl-head .tbl-cnt {
+        white-space: nowrap;
+        flex-shrink: 0;
       }
       .tbl-dot {
         width: 7px;
@@ -2832,6 +2864,7 @@
       <div id="main">
         <!-- LEFT PANEL -->
         <div id="left-panel">
+          <div id="lp-resize-handle" title="Arrastra para redimensionar"></div>
           <div id="lp-tabs">
             <div class="lp-tab active" id="lpt-flow" onclick="lpTab('flow')">
               Nodos
@@ -3336,7 +3369,112 @@ ORDER BY v.precio DESC;</textarea
       </div>
     </div>
 
-    <!-- CONTEXT MENU -->
+    <!-- ROWS DATA MODAL -->
+    <div class="modal-overlay" id="rows-modal" style="z-index: 1100">
+      <div
+        class="modal"
+        style="
+          max-width: 700px;
+          width: 95vw;
+          max-height: 85vh;
+          display: flex;
+          flex-direction: column;
+        "
+      >
+        <div
+          style="
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+          "
+        >
+          <h2 id="rows-modal-title" style="font-size: 14px">Datos</h2>
+          <button
+            onclick="closeRowsModal()"
+            style="
+              background: none;
+              border: none;
+              font-size: 16px;
+              cursor: pointer;
+              color: #888;
+            "
+          >
+            ✕
+          </button>
+        </div>
+        <p style="font-size: 10px; color: #888; margin-bottom: 10px">
+          Ingresa los datos reales de esta tabla. Estos se usarán en las
+          consultas SQL.
+        </p>
+        <div
+          id="rows-form-area"
+          style="flex: 1; overflow-y: auto; max-height: 50vh"
+        ></div>
+        <div style="display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap">
+          <button
+            onclick="addRowForm()"
+            style="
+              background: #1a7a4a;
+              border: none;
+              color: white;
+              padding: 6px 14px;
+              border-radius: 6px;
+              font-size: 11px;
+              font-weight: 700;
+              cursor: pointer;
+            "
+          >
+            + Agregar fila
+          </button>
+          <button
+            onclick="saveRowsModal()"
+            style="
+              background: var(--red);
+              border: none;
+              color: white;
+              padding: 6px 16px;
+              border-radius: 6px;
+              font-size: 11px;
+              font-weight: 700;
+              cursor: pointer;
+            "
+          >
+            💾 Guardar datos
+          </button>
+          <button
+            onclick="clearAllRows()"
+            style="
+              background: none;
+              border: 1px solid #ccc;
+              color: #888;
+              padding: 6px 12px;
+              border-radius: 6px;
+              font-size: 11px;
+              cursor: pointer;
+            "
+          >
+            🗑 Limpiar todo
+          </button>
+          <button
+            onclick="closeRowsModal()"
+            style="
+              margin-left: auto;
+              background: none;
+              border: 1px solid #ccc;
+              color: #888;
+              padding: 6px 14px;
+              border-radius: 6px;
+              font-size: 11px;
+              cursor: pointer;
+            "
+          >
+            Cancelar
+          </button>
+        </div>
+      </div>
+    </div>
+
     <div class="ctx" id="ctx">
       <div class="ctx-item" onclick="ctxDo('props')">⚙️ Propiedades</div>
       <div class="ctx-item" onclick="ctxDo('dup')">📋 Duplicar</div>
@@ -3695,14 +3833,84 @@ ORDER BY v.precio DESC;</textarea
       /* ════════════════════════════════════════════
    STATE
 ════════════════════════════════════════════ */
-      const S = {
-        nodes: [],
-        conns: [],
+      /* ── PRESET JSON (gemini-code) ── */
+      const PRESET_JSON = {
+        nodes: [
+          {
+            id: "n1",
+            type: "data-source",
+            x: 60,
+            y: 60,
+            props: { Tabla: "usuarios", Modo: "SELECT", Filtro: "" },
+          },
+          {
+            id: "n2",
+            type: "data-source",
+            x: 60,
+            y: 200,
+            props: { Tabla: "historial_puntos", Modo: "SELECT", Filtro: "" },
+          },
+          {
+            id: "n3",
+            type: "join",
+            x: 320,
+            y: 130,
+            props: {
+              "Tipo JOIN": "INNER",
+              "Llave izq": "cc",
+              "Llave der": "usuario_cc",
+            },
+          },
+          {
+            id: "n4",
+            type: "filter",
+            x: 560,
+            y: 130,
+            props: { Campo: "puntos", Operador: ">=", Valor: "200" },
+          },
+          {
+            id: "n5",
+            type: "aggregate",
+            x: 800,
+            y: 130,
+            props: { Función: "SUM", Campo: "puntos", "GROUP BY": "cc" },
+          },
+          {
+            id: "n6",
+            type: "output-table",
+            x: 1040,
+            y: 60,
+            props: {
+              "Tabla destino": "beneficios_usuarios",
+              Operación: "INSERT",
+              "Si duplicado": "SKIP",
+            },
+          },
+          {
+            id: "n7",
+            type: "output-report",
+            x: 1040,
+            y: 200,
+            props: {
+              Formato: "JSON",
+              Nombre: "consulta_puntos_usuarios",
+              Destino: "app_screen",
+            },
+          },
+        ],
+        conns: [
+          { id: "c1", from: "n1", to: "n3" },
+          { id: "c2", from: "n2", to: "n3" },
+          { id: "c3", from: "n3", to: "n4" },
+          { id: "c4", from: "n4", to: "n5" },
+          { id: "c5", from: "n5", to: "n6" },
+          { id: "c6", from: "n5", to: "n7" },
+        ],
         tables: [
           {
             id: "t1",
             name: "usuarios",
-            color: "#CC0000",
+            color: "#1A7BD4",
             fields: [
               { name: "cc", type: "VARCHAR", pk: true },
               { name: "nombre", type: "VARCHAR", pk: false },
@@ -3713,13 +3921,16 @@ ORDER BY v.precio DESC;</textarea
           {
             id: "t2",
             name: "beneficios",
-            color: "#1A7BD4",
+            color: "#CC0000",
             fields: [
               { name: "id", type: "INT", pk: true },
               { name: "tipo", type: "VARCHAR", pk: false },
               { name: "valor_descuento", type: "DECIMAL", pk: false },
               { name: "puntos_requeridos", type: "INT", pk: false },
+              { name: "fecha_inicio", type: "DATE", pk: false },
               { name: "fecha_fin", type: "DATE", pk: false },
+              { name: "dias_permitidos", type: "VARCHAR", pk: false },
+              { name: "comercio", type: "VARCHAR", pk: false },
             ],
           },
           {
@@ -3731,7 +3942,7 @@ ORDER BY v.precio DESC;</textarea
               { name: "usuario_cc", type: "VARCHAR", pk: false },
               { name: "tipo_movimiento", type: "VARCHAR", pk: false },
               { name: "puntos", type: "INT", pk: false },
-              { name: "fecha", type: "DATE", pk: false },
+              { name: "fecha", type: "DATETIME", pk: false },
             ],
           },
           {
@@ -3743,10 +3954,17 @@ ORDER BY v.precio DESC;</textarea
               { name: "usuario_cc", type: "VARCHAR", pk: false },
               { name: "beneficio_id", type: "INT", pk: false },
               { name: "codigo_qr", type: "VARCHAR", pk: false },
+              { name: "fecha_redencion", type: "DATETIME", pk: false },
               { name: "estado", type: "VARCHAR", pk: false },
             ],
           },
         ],
+      };
+
+      const S = {
+        nodes: [],
+        conns: [],
+        tables: PRESET_JSON.tables.map((t) => ({ ...t, rows: [] })),
         selNode: null,
         selConn: null,
         scale: 1,
@@ -4445,7 +4663,8 @@ ORDER BY v.precio DESC;</textarea
       <div class="tbl-head" onclick="selectTableInPane('${t.id}');showTablePreview('${t.name}','${t.color}')">
         <div class="tbl-dot" style="background:${t.color};"></div>
         <div class="tbl-name">${t.name}</div>
-        <div class="tbl-cnt">${t.fields.length}</div>
+        <div class="tbl-cnt">${t.fields.length} campos · ${(t.rows || []).length} filas</div>
+        <button style="background:#1a7a4a;border:none;color:white;cursor:pointer;font-size:9px;padding:2px 6px;border-radius:4px;font-weight:700;" title="Insertar / ver datos reales" onclick="event.stopPropagation();openRowsModal('${t.id}')">Datos</button>
         <button style="background:var(--red);border:none;color:white;cursor:pointer;font-size:9px;padding:2px 6px;border-radius:4px;font-weight:700;" title="Consultar tabla" onclick="event.stopPropagation();quickQueryTable('${t.name}')">SQL</button>
         <button style="background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:11px;padding:0 2px;" onclick="event.stopPropagation();editTable('${t.id}')">✏️</button>
         <button style="background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:11px;padding:0 2px;" onclick="event.stopPropagation();delTable('${t.id}')">🗑</button>
@@ -4461,14 +4680,26 @@ ORDER BY v.precio DESC;</textarea
 
       /* ── TABLE DATA PREVIEW ── */
       function showTablePreview(tname, color) {
-        const rows =
-          DB[tname] ||
-          DB[
-            Object.keys(DB).find((k) => k.toLowerCase() === tname.toLowerCase())
-          ];
+        // Prefer real rows from S.tables; fall back to DB only for built-in tables
+        const userTbl = S.tables.find(
+          (t) =>
+            t.name === tname || t.name.toLowerCase() === tname.toLowerCase(),
+        );
+        let rows;
+        if (userTbl) {
+          rows = userTbl.rows || [];
+        } else {
+          const k = Object.keys(DB).find(
+            (k) => k.toLowerCase() === tname.toLowerCase(),
+          );
+          rows = k ? DB[k] : [];
+        }
         if (!rows || !rows.length) {
           closeTblPreview();
-          toast(`Tabla '${tname}' sin datos cargados`, "err");
+          toast(
+            `Tabla '${tname}' sin datos. Usa el botón "Datos" para agregar registros reales.`,
+            "err",
+          );
           return;
         }
         const cols = Object.keys(rows[0]);
@@ -4533,6 +4764,104 @@ ORDER BY v.precio DESC;</textarea
       function closeTableModal() {
         document.getElementById("table-modal").classList.remove("open");
       }
+
+      /* ════════════════════════════════════════════
+   ROWS DATA MODAL
+════════════════════════════════════════════ */
+      let _rowsModalTableId = null;
+      function openRowsModal(tableId) {
+        _rowsModalTableId = tableId;
+        const t = S.tables.find((x) => x.id === tableId);
+        if (!t) return;
+        document.getElementById("rows-modal-title").textContent =
+          `📊 Datos reales — ${t.name}`;
+        renderRowForms(t);
+        document.getElementById("rows-modal").classList.add("open");
+      }
+      function closeRowsModal() {
+        document.getElementById("rows-modal").classList.remove("open");
+        _rowsModalTableId = null;
+      }
+      function renderRowForms(t) {
+        const area = document.getElementById("rows-form-area");
+        const rows = t.rows || [];
+        if (!rows.length) {
+          area.innerHTML = `<div style="text-align:center;padding:20px;color:#aaa;font-size:12px;">Sin datos. Haz clic en "+ Agregar fila" para empezar.</div>`;
+          return;
+        }
+        // Render table-like grid
+        const fields = t.fields;
+        area.innerHTML = `
+    <table style="width:100%;border-collapse:collapse;font-size:11px;">
+      <thead>
+        <tr style="background:#f5f5f5;">
+          ${fields.map((f) => `<th style="padding:5px 8px;text-align:left;border-bottom:1px solid #e0e0e0;font-weight:700;color:#555;">${f.name}<span style="font-size:8px;color:#aaa;margin-left:3px;">${f.type}</span></th>`).join("")}
+          <th style="width:30px;"></th>
+        </tr>
+      </thead>
+      <tbody id="rows-tbody">
+        ${rows
+          .map(
+            (row, ri) => `
+          <tr data-row="${ri}" style="border-bottom:1px solid #f0f0f0;">
+            ${fields.map((f) => `<td style="padding:3px 4px;"><input data-field="${f.name}" value="${row[f.name] ?? ""}" style="width:100%;border:1px solid #e0e0e0;border-radius:4px;padding:4px 6px;font-size:11px;"/></td>`).join("")}
+            <td><button onclick="deleteRowForm(${ri})" style="background:none;border:none;color:#ccc;cursor:pointer;font-size:13px;" title="Eliminar fila">✕</button></td>
+          </tr>`,
+          )
+          .join("")}
+      </tbody>
+    </table>`;
+      }
+      function addRowForm() {
+        const t = S.tables.find((x) => x.id === _rowsModalTableId);
+        if (!t) return;
+        if (!t.rows) t.rows = [];
+        const emptyRow = {};
+        t.fields.forEach((f) => (emptyRow[f.name] = ""));
+        t.rows.push(emptyRow);
+        renderRowForms(t);
+      }
+      function deleteRowForm(ri) {
+        const t = S.tables.find((x) => x.id === _rowsModalTableId);
+        if (!t || !t.rows) return;
+        t.rows.splice(ri, 1);
+        renderRowForms(t);
+      }
+      function clearAllRows() {
+        if (!confirm("¿Eliminar todos los datos de esta tabla?")) return;
+        const t = S.tables.find((x) => x.id === _rowsModalTableId);
+        if (!t) return;
+        t.rows = [];
+        renderRowForms(t);
+      }
+      function saveRowsModal() {
+        const t = S.tables.find((x) => x.id === _rowsModalTableId);
+        if (!t) return;
+        // Read all inputs from the table
+        const tbody = document.getElementById("rows-tbody");
+        if (!tbody) {
+          closeRowsModal();
+          return;
+        }
+        const trs = tbody.querySelectorAll("tr[data-row]");
+        const newRows = [];
+        trs.forEach((tr) => {
+          const row = {};
+          tr.querySelectorAll("input[data-field]").forEach((inp) => {
+            const val = inp.value.trim();
+            // Auto-cast numbers
+            row[inp.dataset.field] = val === "" ? "" : isNaN(val) ? val : +val;
+          });
+          // Only keep row if at least one field has a value
+          if (Object.values(row).some((v) => v !== "" && v !== null))
+            newRows.push(row);
+        });
+        t.rows = newRows;
+        syncUserTablesToDB();
+        renderTablesList();
+        closeRowsModal();
+        toast(`${newRows.length} fila(s) guardadas en '${t.name}' ✓`, "ok");
+      }
       function addFieldRow(name = "", type = "VARCHAR", pk = false) {
         const b = document.getElementById("field-builder");
         const row = document.createElement("div");
@@ -4571,9 +4900,17 @@ ORDER BY v.precio DESC;</textarea
           t.name = name;
           t.color = color;
           t.fields = fields;
+          // Keep existing rows, just update structure
         } else {
-          S.tables.push({ id: "t" + Date.now(), name, color, fields });
+          S.tables.push({
+            id: "t" + Date.now(),
+            name,
+            color,
+            fields,
+            rows: [],
+          });
         }
+        syncUserTablesToDB();
         closeTableModal();
         renderTablesList();
         toast("Tabla guardada ✓", "ok");
@@ -4975,11 +5312,28 @@ ORDER BY v.precio DESC;</textarea
           return o;
         });
       }
+      function syncUserTablesToDB() {
+        // S.tables are the tables the user defined in the panel.
+        // If they have rows stored, use those. If not, clear the DB entry so
+        // stale hardcoded data is never served for a user-defined table.
+        S.tables.forEach((t) => {
+          DB[t.name] = t.rows || [];
+          // Also remove any case-variant key that might shadow this table
+          Object.keys(DB).forEach((k) => {
+            if (k !== t.name && k.toLowerCase() === t.name.toLowerCase())
+              delete DB[k];
+          });
+        });
+      }
       function getTbl(n) {
+        syncUserTablesToDB();
         const k = Object.keys(DB).find(
           (k) => k.toLowerCase() === n.toLowerCase(),
         );
-        if (!k) throw new Error(`Tabla '${n}' no encontrada`);
+        if (!k)
+          throw new Error(
+            `Tabla '${n}' no encontrada. Tablas disponibles: ${Object.keys(DB).join(", ")}`,
+          );
         return DB[k];
       }
       function resCol(expr, row) {
@@ -7168,89 +7522,26 @@ ORDER BY v.precio DESC;</textarea
           try {
             const d = JSON.parse(ev.target.result);
             if (d.tables) {
-              S.tables = d.tables;
-              // Seed DB with sample data for each imported table so SQL works
+              // Merge imported table schemas into S.tables
+              S.tables = d.tables.map((t) => ({ ...t, rows: t.rows || [] }));
               d.tables.forEach((t) => {
-                const tname = t.name;
-                if (
-                  !DB[tname] &&
-                  !DB[
+                // If JSON has rows, use them; otherwise preserve existing DB data for that table
+                const existingRows =
+                  DB[t.name] ||
+                  DB[
                     Object.keys(DB).find(
-                      (k) => k.toLowerCase() === tname.toLowerCase(),
-                    ) || ""
-                  ]
-                ) {
-                  // Generate 5 sample rows based on field types
-                  const rows = [];
-                  for (let i = 1; i <= 5; i++) {
-                    const row = {};
-                    t.fields.forEach((f) => {
-                      const n = f.name;
-                      if (f.pk) {
-                        row[n] = i;
-                      } else if (f.type === "INT") {
-                        row[n] = Math.floor(Math.random() * 1000) + 1;
-                      } else if (f.type === "DECIMAL" || f.type === "FLOAT") {
-                        row[n] = +(Math.random() * 10000).toFixed(2);
-                      } else if (f.type === "DATE") {
-                        row[n] =
-                          `2026-0${Math.floor(Math.random() * 9) + 1}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, "0")}`;
-                      } else if (f.type === "DATETIME") {
-                        row[n] =
-                          `2026-05-${String(i).padStart(2, "0")} 10:00:00`;
-                      } else if (f.type === "BOOLEAN") {
-                        row[n] = i % 2 === 0;
-                      } else {
-                        // VARCHAR — use field name as hint
-                        if (n.includes("cc") || n.includes("usuario_cc")) {
-                          row[n] =
-                            "CC" + String(10000000 + i * 1234567).slice(0, 10);
-                        } else if (n.includes("nombre")) {
-                          row[n] = [
-                            "Carlos García",
-                            "María López",
-                            "Pedro Martínez",
-                            "Ana Gómez",
-                            "Luis Torres",
-                          ][i - 1];
-                        } else if (n.includes("correo")) {
-                          row[n] = `usuario${i}@terpel.com`;
-                        } else if (n.includes("celular")) {
-                          row[n] =
-                            `31${i}${Math.floor(Math.random() * 9000000) + 1000000}`;
-                        } else if (n.includes("tipo")) {
-                          row[n] = [
-                            "ACUMULACION",
-                            "REDENCIÓN",
-                            "AJUSTE",
-                            "BONO",
-                            "RETIRO",
-                          ][i - 1];
-                        } else if (n.includes("estado")) {
-                          row[n] = [
-                            "activo",
-                            "activo",
-                            "pendiente",
-                            "redimido",
-                            "activo",
-                          ][i - 1];
-                        } else if (n.includes("comercio")) {
-                          row[n] = [
-                            "Terpel Norte",
-                            "Terpel Sur",
-                            "Terpel Centro",
-                            "Terpel Oeste",
-                            "Terpel Este",
-                          ][i - 1];
-                        } else {
-                          row[n] = `${n}_${i}`;
-                        }
-                      }
-                    });
-                    rows.push(row);
-                  }
-                  DB[tname] = rows;
-                }
+                      (k) => k.toLowerCase() === t.name.toLowerCase(),
+                    )
+                  ] ||
+                  [];
+                const newRows = t.rows && t.rows.length ? t.rows : existingRows;
+                t.rows = newRows;
+                DB[t.name] = newRows;
+                // Remove any case-variant shadow keys to avoid duplicates
+                Object.keys(DB).forEach((k) => {
+                  if (k !== t.name && k.toLowerCase() === t.name.toLowerCase())
+                    delete DB[k];
+                });
               });
             }
             document.getElementById("nodes-layer").innerHTML = "";
@@ -7267,7 +7558,14 @@ ORDER BY v.precio DESC;</textarea
             renderTablesList();
             updateStats();
             updateAvailTables();
-            toast("Importado ✓ — tablas disponibles en SQL", "ok");
+            // Show how many tables have real data
+            const tablesWithData = Object.keys(DB).filter(
+              (k) => Array.isArray(DB[k]) && DB[k].length > 0,
+            );
+            toast(
+              `✓ Importado — ${tablesWithData.length} tabla(s) con datos listos`,
+              "ok",
+            );
           } catch (err) {
             toast("Error al importar: " + err.message, "err");
           }
@@ -7547,52 +7845,45 @@ ORDER BY v.precio DESC;</textarea
         document.getElementById("palette-pane").style.display = "block";
         // Hide right panel initially (no node selected)
         document.getElementById("right-panel").classList.add("rp-hidden");
-        renderTablesList();
-        updateStats();
 
-        // Create example nodes
-        const n1 = createNode("data-source", 60, 60);
-        const n2 = createNode("data-source", 60, 200);
-        const n3 = createNode("join", 320, 130);
-        const n4 = createNode("filter", 560, 130);
-        const n5 = createNode("aggregate", 800, 130);
-        const n6 = createNode("output-table", 1040, 60);
-        const n7 = createNode("output-report", 1040, 200);
+        // ── Sync S.tables rows from DB (DB is now defined) ──
+        S.tables.forEach((t) => {
+          const dbRows =
+            DB[t.name] ||
+            DB[
+              Object.keys(DB).find(
+                (k) => k.toLowerCase() === t.name.toLowerCase(),
+              )
+            ] ||
+            [];
+          t.rows = dbRows;
+        });
 
-        // Set props
-        if (n1) {
-          n1.props["Tabla"] = "venta";
-          n1.props["Modo"] = "SELECT";
-        }
-        if (n2) {
-          n2.props["Tabla"] = "Empleado";
-          n2.props["Modo"] = "SELECT";
-        }
-        if (n3) {
-          n3.props["Tipo JOIN"] = "INNER";
-          n3.props["Llave izq"] = "cod_empleado";
-          n3.props["Llave der"] = "Cod_empleado";
-        }
-        if (n4) {
-          n4.props["Campo"] = "precio";
-          n4.props["Operador"] = ">";
-          n4.props["Valor"] = "50000";
-        }
-        if (n5) {
-          n5.props["Función"] = "SUM";
-          n5.props["Campo"] = "precio";
-          n5.props["GROUP BY"] = "cod_empleado";
-        }
-        if (n6) {
-          n6.props["Tabla destino"] = "registros";
-          n6.props["Operación"] = "INSERT";
-        }
-        if (n7) {
-          n7.props["Formato"] = "JSON";
-          n7.props["Nombre"] = "reporte_ventas";
-        }
+        // ── Load from PRESET_JSON ──
+        // Track max IDs so createNode/createConn don't collide
+        PRESET_JSON.nodes.forEach((n) => {
+          const num = parseInt(n.id.replace(/\D/g, ""));
+          if (!isNaN(num) && num >= nId) nId = num + 1;
+        });
+        PRESET_JSON.conns.forEach((c) => {
+          const num = parseInt(c.id.replace(/\D/g, ""));
+          if (!isNaN(num) && num >= cId) cId = num + 1;
+        });
 
-        // Update node field displays
+        // Render nodes
+        PRESET_JSON.nodes.forEach((nd) => {
+          const node = {
+            id: nd.id,
+            type: nd.type,
+            x: nd.x,
+            y: nd.y,
+            props: { ...nd.props },
+          };
+          S.nodes.push(node);
+          renderNode(node);
+        });
+
+        // Update displayed field values on each node card
         S.nodes.forEach((n) => {
           NT[n.type].fields
             .filter((f) => f)
@@ -7602,21 +7893,60 @@ ORDER BY v.precio DESC;</textarea
             });
         });
 
-        // Connections
-        [
-          [n1, n3],
-          [n2, n3],
-          [n3, n4],
-          [n4, n5],
-          [n5, n6],
-          [n5, n7],
-        ].forEach(([a, b]) => {
-          if (a && b) createConn(a.id, b.id);
+        // Create connections
+        PRESET_JSON.conns.forEach((c) => {
+          S.conns.push({ id: c.id, from: c.from, to: c.to });
         });
+        renderConns();
 
-        hideHint();
+        renderTablesList();
         updateStats();
+        updateAvailTables();
+        hideHint();
         setTimeout(drawMinimap, 300);
+        toast("✓ Flujo Gemini cargado", "ok");
+      })();
+
+      /* ════════════════════════════════════════════
+   LEFT PANEL RESIZE
+════════════════════════════════════════════ */
+      (function () {
+        const handle = document.getElementById("lp-resize-handle");
+        const panel = document.getElementById("left-panel");
+        if (!handle || !panel) return;
+        let dragging = false,
+          startX = 0,
+          startW = 0;
+        handle.addEventListener("mousedown", (e) => {
+          dragging = true;
+          startX = e.clientX;
+          startW = panel.offsetWidth;
+          handle.classList.add("dragging");
+          document.body.style.cursor = "col-resize";
+          document.body.style.userSelect = "none";
+          e.preventDefault();
+        });
+        document.addEventListener("mousemove", (e) => {
+          if (!dragging) return;
+          const newW = Math.min(
+            480,
+            Math.max(180, startW + (e.clientX - startX)),
+          );
+          panel.style.width = newW + "px";
+          drawMinimap && drawMinimap();
+        });
+        document.addEventListener("mouseup", () => {
+          if (!dragging) return;
+          dragging = false;
+          handle.classList.remove("dragging");
+          document.body.style.cursor = "";
+          document.body.style.userSelect = "";
+        });
+        // Double-click to reset to default width
+        handle.addEventListener("dblclick", () => {
+          panel.style.width = "220px";
+          drawMinimap && drawMinimap();
+        });
       })();
 
       /* ── THEME TOGGLE ── */
