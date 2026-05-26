@@ -164,6 +164,14 @@
         overflow: hidden;
         min-height: 0;
       }
+      #canvas-and-preview {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        min-height: 0;
+        position: relative;
+      }
 
       /* ── LEFT PANEL ── */
       #left-panel {
@@ -356,22 +364,31 @@
         color: var(--text-dim);
       }
 
-      /* ── TABLE DATA PREVIEW PANEL (canvas overlay) ── */
+      /* ── TABLE DATA PREVIEW PANEL (split layout) ── */
+      #canvas-and-preview {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        min-height: 0;
+        position: relative;
+      }
       #tbl-preview-panel {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
+        flex-shrink: 0;
         background: #fff;
         border-top: 2px solid var(--red);
-        box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.15);
-        z-index: 50;
+        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.12);
         display: none;
         flex-direction: column;
-        max-height: 55%;
+        height: 50%;
+        min-height: 120px;
       }
       #tbl-preview-panel.open {
         display: flex;
+      }
+      #canvas-wrap {
+        flex: 1;
+        min-height: 0;
       }
       #tbl-preview-header {
         display: flex;
@@ -874,6 +891,7 @@
         background: #f7f8fa;
         background-image: radial-gradient(circle, #d0d4dc 1px, transparent 1px);
         background-size: 26px 26px;
+        min-height: 0;
       }
       #canvas {
         position: absolute;
@@ -1085,7 +1103,7 @@
         pointer-events: none;
       }
 
-      /* ── RIGHT PANEL ── */
+      /* Right panel hidden when no node selected */
       #right-panel {
         width: 280px;
         flex-shrink: 0;
@@ -1094,6 +1112,110 @@
         display: flex;
         flex-direction: column;
         overflow: hidden;
+        transition:
+          width 0.2s ease,
+          opacity 0.2s ease;
+      }
+      #right-panel.rp-hidden {
+        width: 0;
+        border-left: none;
+        overflow: hidden;
+      }
+
+      /* Save changes dialog */
+      #save-dialog {
+        position: fixed;
+        inset: 0;
+        z-index: 800;
+        background: rgba(0, 0, 0, 0.55);
+        display: none;
+        align-items: center;
+        justify-content: center;
+      }
+      #save-dialog.open {
+        display: flex;
+      }
+      #save-dialog-box {
+        background: #fff;
+        border-radius: 14px;
+        padding: 28px 32px;
+        width: 380px;
+        max-width: 94vw;
+        box-shadow: 0 24px 80px rgba(0, 0, 0, 0.4);
+        text-align: center;
+      }
+      #save-dialog-box h3 {
+        font-size: 16px;
+        font-weight: 800;
+        color: #1a1a1a;
+        margin-bottom: 8px;
+      }
+      #save-dialog-box p {
+        font-size: 12px;
+        color: #666;
+        margin-bottom: 22px;
+        line-height: 1.6;
+      }
+      .sd-btns {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+      }
+      .sd-btn {
+        padding: 9px 24px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        border: none;
+        transition: 0.15s;
+      }
+      .sd-cancel {
+        background: #f0f0f0;
+        color: #555;
+      }
+      .sd-cancel:hover {
+        background: #e0e0e0;
+      }
+      .sd-discard {
+        background: #fff;
+        border: 1px solid #ddd !important;
+        border: none;
+        color: #888;
+      }
+      .sd-discard:hover {
+        background: #fff0f0;
+        color: var(--red);
+      }
+      .sd-save {
+        background: var(--red);
+        color: white;
+      }
+      .sd-save:hover {
+        background: var(--red-dark);
+      }
+
+      /* Preview toggle button */
+      #preview-resize-handle {
+        height: 6px;
+        background: var(--border2);
+        cursor: ns-resize;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.15s;
+      }
+      #preview-resize-handle:hover {
+        background: #ccc;
+      }
+      #preview-resize-handle::after {
+        content: "";
+        display: block;
+        width: 40px;
+        height: 2px;
+        background: var(--gray-pale);
+        border-radius: 2px;
       }
       #rp-tabs {
         display: flex;
@@ -2614,6 +2736,30 @@
       body.dark-mode #ec-ticker {
         color: #555;
       }
+      body.dark-mode #save-dialog-box {
+        background: #1c1c1c;
+      }
+      body.dark-mode #save-dialog-box h3 {
+        color: #ebebeb;
+      }
+      body.dark-mode #save-dialog-box p {
+        color: #777;
+      }
+      body.dark-mode .sd-cancel {
+        background: #2a2a2a;
+        color: #909090;
+      }
+      body.dark-mode .sd-discard {
+        background: #1c1c1c;
+        border-color: #3a3a3a !important;
+        color: #777;
+      }
+      body.dark-mode #preview-resize-handle {
+        background: #2e2e2e;
+      }
+      body.dark-mode #preview-resize-handle:hover {
+        background: #444;
+      }
     </style>
   </head>
   <body>
@@ -2662,6 +2808,13 @@
         </button>
         <button class="tb-action btn-ghost" onclick="importJSON()">
           ⬆ Importar
+        </button>
+        <button
+          class="tb-action"
+          style="background: #1a1a1a; color: #ffd200; border: none"
+          onclick="openAppPreview()"
+        >
+          📱 Ver App
         </button>
         <button
           class="tb-action"
@@ -2800,80 +2953,88 @@
           </div>
         </div>
 
-        <!-- CANVAS -->
-        <div id="canvas-wrap">
-          <div id="drop-hint">⊕ Suelta aquí para agregar el nodo</div>
-          <div id="empty-hint">
-            <div class="eh-emoji">⛽</div>
-            <div class="eh-title">Canvas vacío</div>
-            <div class="eh-sub">
-              Arrastra un nodo desde el panel izquierdo<br />o haz doble clic
-              aquí
+        <!-- CANVAS + PREVIEW SPLIT -->
+        <div id="canvas-and-preview">
+          <div id="canvas-wrap">
+            <div id="drop-hint">⊕ Suelta aquí para agregar el nodo</div>
+            <div id="empty-hint">
+              <div class="eh-emoji">⛽</div>
+              <div class="eh-title">Canvas vacío</div>
+              <div class="eh-sub">
+                Arrastra un nodo desde el panel izquierdo<br />o haz doble clic
+                aquí
+              </div>
             </div>
+            <div id="canvas">
+              <svg id="conn-svg">
+                <defs>
+                  <marker
+                    id="arr-y"
+                    markerWidth="8"
+                    markerHeight="8"
+                    refX="6"
+                    refY="3"
+                    orient="auto"
+                  >
+                    <path
+                      d="M0 0L6 3L0 6"
+                      fill="none"
+                      stroke="#FFD200"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                    />
+                  </marker>
+                  <marker
+                    id="arr-g"
+                    markerWidth="8"
+                    markerHeight="8"
+                    refX="6"
+                    refY="3"
+                    orient="auto"
+                  >
+                    <path
+                      d="M0 0L6 3L0 6"
+                      fill="none"
+                      stroke="#555"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                    />
+                  </marker>
+                  <marker
+                    id="arr-r"
+                    markerWidth="8"
+                    markerHeight="8"
+                    refX="6"
+                    refY="3"
+                    orient="auto"
+                  >
+                    <path
+                      d="M0 0L6 3L0 6"
+                      fill="none"
+                      stroke="#CC0000"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                    />
+                  </marker>
+                </defs>
+                <g id="conn-layer"></g>
+                <g id="temp-layer"></g>
+              </svg>
+              <div id="nodes-layer"></div>
+            </div>
+            <canvas id="minimap" width="140" height="90"></canvas>
           </div>
-          <div id="canvas">
-            <svg id="conn-svg">
-              <defs>
-                <marker
-                  id="arr-y"
-                  markerWidth="8"
-                  markerHeight="8"
-                  refX="6"
-                  refY="3"
-                  orient="auto"
-                >
-                  <path
-                    d="M0 0L6 3L0 6"
-                    fill="none"
-                    stroke="#FFD200"
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                  />
-                </marker>
-                <marker
-                  id="arr-g"
-                  markerWidth="8"
-                  markerHeight="8"
-                  refX="6"
-                  refY="3"
-                  orient="auto"
-                >
-                  <path
-                    d="M0 0L6 3L0 6"
-                    fill="none"
-                    stroke="#555"
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                  />
-                </marker>
-                <marker
-                  id="arr-r"
-                  markerWidth="8"
-                  markerHeight="8"
-                  refX="6"
-                  refY="3"
-                  orient="auto"
-                >
-                  <path
-                    d="M0 0L6 3L0 6"
-                    fill="none"
-                    stroke="#CC0000"
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                  />
-                </marker>
-              </defs>
-              <g id="conn-layer"></g>
-              <g id="temp-layer"></g>
-            </svg>
-            <div id="nodes-layer"></div>
-          </div>
-          <!-- TABLE DATA PREVIEW PANEL -->
+          <!-- TABLE DATA PREVIEW PANEL — split below canvas -->
+          <div id="preview-resize-handle" id="prh" style="display: none"></div>
           <div id="tbl-preview-panel">
             <div id="tbl-preview-header">
               <span id="tbl-preview-title">tabla</span>
               <span id="tbl-preview-count">0 registros</span>
-              <button class="tbl-preview-close" onclick="closeTblPreview()">
+              <button
+                class="tbl-preview-close"
+                onclick="closeTblPreview()"
+                title="Ocultar"
+              >
                 ✕
               </button>
             </div>
@@ -2884,8 +3045,8 @@
               </table>
             </div>
           </div>
-          <canvas id="minimap" width="140" height="90"></canvas>
         </div>
+        <!-- /canvas-and-preview -->
 
         <!-- RIGHT PANEL -->
         <div id="right-panel">
@@ -3398,6 +3559,138 @@ ORDER BY v.precio DESC;</textarea
       onchange="handleImport(event)"
     />
 
+    <!-- SAVE CHANGES DIALOG -->
+    <div id="save-dialog">
+      <div id="save-dialog-box">
+        <div style="font-size: 36px; margin-bottom: 12px">💾</div>
+        <h3>¿Guardar cambios?</h3>
+        <p>
+          Hay cambios sin guardar en el nodo seleccionado.<br />¿Deseas
+          guardarlos antes de continuar?
+        </p>
+        <div class="sd-btns">
+          <button class="sd-btn sd-discard" onclick="discardAndDeselect()">
+            Descartar
+          </button>
+          <button class="sd-btn sd-cancel" onclick="closeSaveDialog()">
+            Cancelar
+          </button>
+          <button class="sd-btn sd-save" onclick="saveAndDeselect()">
+            💾 Guardar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- APP PREVIEW MODAL (Terpel Login/Register) -->
+    <div
+      id="app-preview-modal"
+      style="
+        position: fixed;
+        inset: 0;
+        z-index: 900;
+        background: rgba(0, 0, 0, 0.8);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 10px;
+      "
+    >
+      <div
+        style="
+          font-size: 11px;
+          color: rgba(255, 255, 255, 0.5);
+          margin-bottom: 4px;
+        "
+      >
+        📱 Vista previa — App Vívelo Terpel &nbsp;·&nbsp;
+        <span id="app-modal-user-lbl"></span>
+      </div>
+      <!-- Phone frame -->
+      <div
+        id="app-phone-frame"
+        style="
+          width: 340px;
+          background: #0e0e0e;
+          border-radius: 44px;
+          padding: 10px;
+          border: 2px solid #2a2a2a;
+          box-shadow: 0 30px 80px rgba(0, 0, 0, 0.9);
+          position: relative;
+        "
+      >
+        <!-- Status bar -->
+        <div
+          style="
+            background: #cc0000;
+            border-radius: 34px 34px 0 0;
+            padding: 10px 20px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+          "
+        >
+          <span
+            id="app-clock"
+            style="
+              font-size: 13px;
+              font-weight: 700;
+              color: #fff;
+              font-family: monospace;
+            "
+          ></span>
+          <div style="display: flex; align-items: center; gap: 4px">
+            <span style="font-size: 10px; color: rgba(255, 255, 255, 0.8)"
+              >▲▲▲</span
+            >
+            <span style="font-size: 10px; color: rgba(255, 255, 255, 0.8)"
+              >WiFi</span
+            >
+            <span
+              style="
+                font-size: 10px;
+                font-weight: 700;
+                color: #ffd200;
+                border: 1px solid #ffd200;
+                border-radius: 3px;
+                padding: 0 3px;
+              "
+              >65</span
+            >
+          </div>
+        </div>
+        <!-- Screen content -->
+        <div
+          id="app-screen"
+          style="
+            background: #fff;
+            border-radius: 0 0 34px 34px;
+            overflow: hidden;
+            min-height: 560px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+          "
+        ></div>
+      </div>
+      <button
+        onclick="closeAppPreview()"
+        style="
+          margin-top: 6px;
+          background: rgba(255, 255, 255, 0.1);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          color: rgba(255, 255, 255, 0.7);
+          padding: 7px 20px;
+          border-radius: 20px;
+          font-size: 12px;
+          cursor: pointer;
+        "
+      >
+        ✕ Cerrar
+      </button>
+    </div>
+
     <script>
       /* ════════════════════════════════════════════
    STATE
@@ -3408,45 +3701,49 @@ ORDER BY v.precio DESC;</textarea
         tables: [
           {
             id: "t1",
-            name: "venta",
+            name: "usuarios",
             color: "#CC0000",
             fields: [
-              { name: "cod_venta", type: "INT", pk: true },
-              { name: "cod_prod", type: "INT", pk: false },
-              { name: "cantidad", type: "INT", pk: false },
-              { name: "precio", type: "DECIMAL", pk: false },
-              { name: "cod_empleado", type: "INT", pk: false },
+              { name: "cc", type: "VARCHAR", pk: true },
+              { name: "nombre", type: "VARCHAR", pk: false },
+              { name: "celular", type: "VARCHAR", pk: false },
+              { name: "correo", type: "VARCHAR", pk: false },
             ],
           },
           {
             id: "t2",
-            name: "Empleado",
+            name: "beneficios",
             color: "#1A7BD4",
             fields: [
-              { name: "Cod_empleado", type: "INT", pk: true },
-              { name: "nombre", type: "VARCHAR", pk: false },
-              { name: "dto", type: "VARCHAR", pk: false },
-              { name: "fecha_nac", type: "DATE", pk: false },
+              { name: "id", type: "INT", pk: true },
+              { name: "tipo", type: "VARCHAR", pk: false },
+              { name: "valor_descuento", type: "DECIMAL", pk: false },
+              { name: "puntos_requeridos", type: "INT", pk: false },
+              { name: "fecha_fin", type: "DATE", pk: false },
             ],
           },
           {
             id: "t3",
-            name: "productos",
+            name: "historial_puntos",
             color: "#27AE60",
             fields: [
-              { name: "Cod_producto", type: "INT", pk: true },
-              { name: "descripcion", type: "VARCHAR", pk: false },
-              { name: "stock", type: "INT", pk: false },
+              { name: "id", type: "INT", pk: true },
+              { name: "usuario_cc", type: "VARCHAR", pk: false },
+              { name: "tipo_movimiento", type: "VARCHAR", pk: false },
+              { name: "puntos", type: "INT", pk: false },
+              { name: "fecha", type: "DATE", pk: false },
             ],
           },
           {
             id: "t4",
-            name: "registros",
+            name: "beneficios_usuarios",
             color: "#8E44AD",
             fields: [
-              { name: "fecha_v", type: "DATE", pk: false },
-              { name: "cod_producto", type: "INT", pk: false },
-              { name: "descripcion", type: "VARCHAR", pk: false },
+              { name: "id", type: "INT", pk: true },
+              { name: "usuario_cc", type: "VARCHAR", pk: false },
+              { name: "beneficio_id", type: "INT", pk: false },
+              { name: "codigo_qr", type: "VARCHAR", pk: false },
+              { name: "estado", type: "VARCHAR", pk: false },
             ],
           },
         ],
@@ -3549,8 +3846,13 @@ ORDER BY v.precio DESC;</textarea
         ["flow", "tables", "query"].forEach((x) => {
           document
             .getElementById("tab-" + x)
-            .classList.toggle("active", x === t);
+            ?.classList.toggle("active", x === t);
         });
+        if (t === "flow") {
+          lpTab("flow");
+        } else if (t === "tables") {
+          lpTab("tables");
+        }
         if (t === "query") {
           document.querySelectorAll(".rp-tab").forEach((el, i) => {
             if (i === 1) {
@@ -3562,9 +3864,6 @@ ORDER BY v.precio DESC;</textarea
           document.querySelectorAll(".rp-pane").forEach((el, i) => {
             el.classList.toggle("active", i === 1);
           });
-        }
-        if (t === "tables") {
-          lpTab("tables");
         }
       }
 
@@ -3580,6 +3879,14 @@ ORDER BY v.precio DESC;</textarea
         document.getElementById("tables-pane").style.display =
           t === "tables" ? "flex" : "none";
         if (t === "tables") renderTablesList();
+      }
+
+      // Track which table is selected in the Tables pane
+      let _selectedTableId = null;
+
+      function selectTableInPane(tId) {
+        _selectedTableId = tId;
+        renderTablesList();
       }
       function rpTab(t, el) {
         document
@@ -3930,19 +4237,79 @@ ORDER BY v.precio DESC;</textarea
       /* ════════════════════════════════════════════
    SELECTION
 ════════════════════════════════════════════ */
+      let _pendingDeselect = false;
+      let _unsavedChanges = false;
+      let _deselAfterSave = null;
+
       function selectNode(id) {
-        deselectAll();
+        if (S.selNode === id) return;
+        if (_unsavedChanges && S.selNode) {
+          _deselAfterSave = { type: "select", id };
+          openSaveDialog();
+          return;
+        }
+        _doSelectNode(id);
+      }
+      function _doSelectNode(id) {
+        deselectAllSilent();
         S.selNode = id;
+        _unsavedChanges = false;
         document.getElementById("fn-" + id)?.classList.add("selected");
         showNodeProps(id);
+        document.getElementById("right-panel").classList.remove("rp-hidden");
       }
       function deselectAll() {
+        if (_unsavedChanges && S.selNode) {
+          _deselAfterSave = { type: "deselect" };
+          openSaveDialog();
+          return;
+        }
+        _doDeselect();
+      }
+      function deselectAllSilent() {
         S.selNode = null;
         S.selConn = null;
+        _unsavedChanges = false;
         document
           .querySelectorAll(".flow-node")
           .forEach((n) => n.classList.remove("selected"));
         renderConns();
+      }
+      function _doDeselect() {
+        deselectAllSilent();
+        document.getElementById("right-panel").classList.add("rp-hidden");
+        document.getElementById("rp-props").innerHTML =
+          '<div class="empty-rp"><div class="empty-rp-icon">🖱️</div>Selecciona un nodo para editar sus propiedades</div>';
+      }
+
+      /* Save dialog */
+      function openSaveDialog() {
+        document.getElementById("save-dialog").classList.add("open");
+      }
+      function closeSaveDialog() {
+        document.getElementById("save-dialog").classList.remove("open");
+      }
+      function saveAndDeselect() {
+        closeSaveDialog();
+        _unsavedChanges = false;
+        toast("Cambios guardados ✓", "ok");
+        if (_deselAfterSave) {
+          const a = _deselAfterSave;
+          _deselAfterSave = null;
+          if (a.type === "select") _doSelectNode(a.id);
+          else _doDeselect();
+        }
+      }
+      function discardAndDeselect() {
+        closeSaveDialog();
+        _unsavedChanges = false;
+        if (_deselAfterSave) {
+          const a = _deselAfterSave;
+          _deselAfterSave = null;
+          if (a.type === "select") {
+            _doSelectNode(a.id);
+          } else _doDeselect();
+        }
       }
 
       /* ════════════════════════════════════════════
@@ -3998,6 +4365,7 @@ ORDER BY v.precio DESC;</textarea
         node.props[f] = v;
         const el = document.getElementById("fv-" + id + "-" + fk(f));
         if (el) el.textContent = v || "—";
+        _unsavedChanges = true;
       }
       function moveNode(id, x, y) {
         const node = S.nodes.find((n) => n.id === id);
@@ -4016,7 +4384,9 @@ ORDER BY v.precio DESC;</textarea
         S.conns = S.conns.filter((c) => c.from !== id && c.to !== id);
         document.getElementById("fn-" + id)?.remove();
         renderConns();
-        deselectAll();
+        _unsavedChanges = false;
+        deselectAllSilent();
+        document.getElementById("right-panel").classList.add("rp-hidden");
         if (!S.nodes.length) showHint();
         updateStats();
         document.getElementById("rp-props").innerHTML =
@@ -4044,11 +4414,35 @@ ORDER BY v.precio DESC;</textarea
       function renderTablesList() {
         const list = document.getElementById("tables-list");
         list.innerHTML = "";
-        S.tables.forEach((t) => {
+        // Header with "show all" button when one is selected
+        const header = document.querySelector(".tp-header");
+        if (header) {
+          const existing = header.querySelector(".tp-show-all");
+          if (existing) existing.remove();
+          if (_selectedTableId) {
+            const btn = document.createElement("button");
+            btn.className = "tp-btn tp-show-all";
+            btn.style.cssText = "background:#555;margin-right:4px;";
+            btn.textContent = "← Todas";
+            btn.onclick = () => {
+              _selectedTableId = null;
+              renderTablesList();
+            };
+            header.insertBefore(btn, header.querySelector(".tp-btn"));
+          }
+        }
+        const toShow = _selectedTableId
+          ? S.tables.filter((t) => t.id === _selectedTableId)
+          : S.tables;
+        toShow.forEach((t) => {
+          const isSelected = _selectedTableId === t.id;
           const el = document.createElement("div");
           el.className = "tbl-card";
+          el.style.cssText = isSelected
+            ? "border-left:3px solid var(--red);"
+            : "";
           el.innerHTML = `
-      <div class="tbl-head" onclick="showTablePreview('${t.name}','${t.color}')">
+      <div class="tbl-head" onclick="selectTableInPane('${t.id}');showTablePreview('${t.name}','${t.color}')">
         <div class="tbl-dot" style="background:${t.color};"></div>
         <div class="tbl-name">${t.name}</div>
         <div class="tbl-cnt">${t.fields.length}</div>
@@ -4056,7 +4450,7 @@ ORDER BY v.precio DESC;</textarea
         <button style="background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:11px;padding:0 2px;" onclick="event.stopPropagation();editTable('${t.id}')">✏️</button>
         <button style="background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:11px;padding:0 2px;" onclick="event.stopPropagation();delTable('${t.id}')">🗑</button>
       </div>
-      <div class="tbl-fields" id="tf-${t.id}">
+      <div class="tbl-fields${isSelected ? " open" : ""}" id="tf-${t.id}">
         ${t.fields.map((f) => `<div class="tf-row">${f.pk ? '<span class="tf-pk">PK</span>' : ""}<span>${f.name}</span><span class="tf-type">${f.type}</span></div>`).join("")}
       </div>`;
           list.appendChild(el);
@@ -4094,9 +4488,11 @@ ORDER BY v.precio DESC;</textarea
         document.getElementById("tbl-preview-count").textContent =
           `${rows.length} registros · ${cols.length} columnas`;
         document.getElementById("tbl-preview-panel").classList.add("open");
+        document.getElementById("preview-resize-handle").style.display = "flex";
       }
       function closeTblPreview() {
         document.getElementById("tbl-preview-panel").classList.remove("open");
+        document.getElementById("preview-resize-handle").style.display = "none";
       }
       function toggleTbl(id) {
         document.getElementById(id)?.classList.toggle("open");
@@ -4639,15 +5035,16 @@ ORDER BY v.precio DESC;</textarea
         });
       }
       function updateAvailTables() {
-        const names = [
-          ...new Set([...Object.keys(DB), ...S.tables.map((t) => t.name)]),
-        ];
+        // Only show tables that are registered in S.tables (not internal DB tables)
+        const names = S.tables.map((t) => t.name);
         const el = document.getElementById("avail-tables");
-        if (el) el.textContent = names.join(", ");
+        if (el) el.textContent = names.join(", ") || "(ninguna)";
         const sm = document.getElementById("sm-avail-lbl");
-        if (sm) sm.textContent = names.join(", ");
+        if (sm) sm.textContent = names.join(", ") || "(ninguna)";
         const smh = document.getElementById("sm-tables-lbl");
-        if (smh) smh.textContent = names.length + " tablas";
+        if (smh)
+          smh.textContent =
+            names.length + " tabla" + (names.length !== 1 ? "s" : "");
       }
 
       /* ════════════════════════════════════════════
@@ -6093,6 +6490,463 @@ ORDER BY v.precio DESC;</textarea
         document.body.appendChild(overlay);
       }
 
+      /* ════════════════════════════════════════════
+   APP PREVIEW — TERPEL LOGIN / REGISTER
+════════════════════════════════════════════ */
+      function openAppPreview() {
+        document.getElementById("app-preview-modal").style.display = "flex";
+        document.getElementById("app-modal-user-lbl").textContent = "";
+        // Tick clock
+        if (window._appClockInterval) clearInterval(window._appClockInterval);
+        function updateClock() {
+          const n = new Date();
+          const t = `${String(n.getHours()).padStart(2, "0")}:${String(n.getMinutes()).padStart(2, "0")}`;
+          const el = document.getElementById("app-clock");
+          if (el) el.textContent = t;
+        }
+        updateClock();
+        window._appClockInterval = setInterval(updateClock, 15000);
+        renderAppScreen("onboarding");
+      }
+
+      function closeAppPreview() {
+        document.getElementById("app-preview-modal").style.display = "none";
+        if (window._appClockInterval) clearInterval(window._appClockInterval);
+      }
+
+      // Allow click outside phone to close
+      document.addEventListener("DOMContentLoaded", () => {
+        const m = document.getElementById("app-preview-modal");
+        if (m)
+          m.addEventListener("click", (e) => {
+            if (e.target === m) closeAppPreview();
+          });
+      });
+
+      function renderAppScreen(screen, data) {
+        data = data || {};
+        const scr = document.getElementById("app-screen");
+        if (!scr) return;
+
+        const screens = {
+          // ── ONBOARDING (slider) ──────────────────────────────────────────
+          onboarding: `
+      <div style="display:flex;flex-direction:column;height:100%;background:#fff;overflow:hidden;">
+        <!-- Red header image area -->
+        <div style="background:linear-gradient(180deg,#CC0000 60%,#fff 60%);flex-shrink:0;height:220px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;">
+          <div style="position:absolute;inset:0;background:linear-gradient(160deg,#CC0000 55%,#fff 55%);"></div>
+          <div style="position:relative;z-index:1;text-align:center;">
+            <!-- Illustrative graphic: car + charger -->
+            <div style="font-size:52px;margin-bottom:0;">🚗⚡</div>
+          </div>
+        </div>
+        <!-- Slide content -->
+        <div style="flex:1;padding:24px 22px 10px;text-align:center;display:flex;flex-direction:column;align-items:center;">
+          <div style="font-size:20px;font-weight:900;color:#CC0000;line-height:1.25;margin-bottom:12px;">Recarga tu vehículo<br>fácil y rápido</div>
+          <div style="font-size:13px;color:#555;line-height:1.6;margin-bottom:20px;">Muévete fácil con tu vehículo eléctrico, conoce las electrolineras más cercanas, los tipos de cargador y programa tu recarga en el camino.</div>
+          <!-- Dots indicator -->
+          <div style="display:flex;gap:6px;margin-bottom:24px;">
+            <div style="width:7px;height:7px;border-radius:50%;background:#DDD;"></div>
+            <div style="width:20px;height:7px;border-radius:4px;background:#CC0000;"></div>
+            <div style="width:7px;height:7px;border-radius:50%;background:#DDD;"></div>
+            <div style="width:7px;height:7px;border-radius:50%;background:#DDD;"></div>
+          </div>
+        </div>
+        <!-- CTA buttons -->
+        <div style="padding:0 22px 28px;display:flex;gap:12px;flex-shrink:0;">
+          <button onclick="renderAppScreen('login')" style="flex:1;padding:14px;border-radius:14px;border:2px solid #CC0000;background:#fff;color:#CC0000;font-size:14px;font-weight:700;cursor:pointer;">Iniciar sesión</button>
+          <button onclick="renderAppScreen('register')" style="flex:1;padding:14px;border-radius:14px;border:none;background:#CC0000;color:#fff;font-size:14px;font-weight:700;cursor:pointer;">Registrarme</button>
+        </div>
+      </div>`,
+
+          // ── LOGIN ────────────────────────────────────────────────────────
+          login: `
+      <div style="display:flex;flex-direction:column;height:100%;background:#fff;overflow:hidden;">
+        <!-- Red topbar -->
+        <div style="background:#CC0000;padding:10px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0;">
+          <button onclick="renderAppScreen('onboarding')" style="background:none;border:none;color:#fff;font-size:18px;cursor:pointer;line-height:1;">‹</button>
+          <span style="font-size:13px;font-weight:700;color:#fff;">Volver</span>
+        </div>
+        <!-- Image -->
+        <div style="height:160px;background:linear-gradient(135deg,#CC0000 0%,#FF6B6B 100%);display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;position:relative;">
+          <div style="font-size:60px;opacity:.25;position:absolute;">🚗</div>
+          <div style="font-size:48px;position:relative;z-index:1;">🔑</div>
+        </div>
+        <!-- Form -->
+        <div style="flex:1;padding:20px 22px;overflow-y:auto;">
+          <div style="font-size:22px;font-weight:900;color:#CC0000;margin-bottom:6px;">Iniciar sesión</div>
+          <div style="font-size:12px;color:#666;margin-bottom:20px;line-height:1.5;">Ingresa tu tipo y número de documento para iniciar sesión en Terpel.</div>
+          <!-- Doc type + number -->
+          <div style="border:1.5px solid #DDD;border-radius:14px;overflow:hidden;display:flex;align-items:center;margin-bottom:16px;">
+            <div style="padding:14px 12px;display:flex;align-items:center;gap:4px;border-right:1.5px solid #EEE;cursor:pointer;flex-shrink:0;">
+              <span style="font-size:13px;font-weight:700;color:#333;">CC</span>
+              <span style="font-size:10px;color:#888;">▾</span>
+            </div>
+            <input id="login-cc" type="text" placeholder="Número de documento *" style="flex:1;border:none;outline:none;padding:14px 12px;font-size:13px;color:#333;" oninput="appLoginCheck()"/>
+            <span style="padding:0 12px;font-size:16px;color:#1A7BD4;">ℹ</span>
+          </div>
+          <!-- Status feedback -->
+          <div id="login-feedback" style="margin-bottom:12px;min-height:20px;font-size:11px;"></div>
+        </div>
+        <!-- Login button -->
+        <div style="padding:0 22px 28px;flex-shrink:0;">
+          <button id="login-btn" onclick="appDoLogin()" style="width:100%;padding:15px;border-radius:14px;border:none;background:#DDD;color:#999;font-size:14px;font-weight:700;cursor:not-allowed;">Iniciar sesión</button>
+        </div>
+      </div>`,
+
+          // ── REGISTER ─────────────────────────────────────────────────────
+          register: `
+      <div style="display:flex;flex-direction:column;height:100%;background:#fff;overflow:hidden;">
+        <!-- Red topbar -->
+        <div style="background:#CC0000;padding:10px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0;">
+          <button onclick="renderAppScreen('onboarding')" style="background:none;border:none;color:#fff;font-size:18px;cursor:pointer;line-height:1;">‹</button>
+          <span style="font-size:13px;font-weight:700;color:#fff;">Volver</span>
+        </div>
+        <!-- Image -->
+        <div style="height:130px;background:linear-gradient(135deg,#1A1A1A 0%,#333 100%);display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative;overflow:hidden;">
+          <div style="font-size:56px;opacity:.15;position:absolute;">⛽</div>
+          <div style="font-size:40px;position:relative;z-index:1;">📝</div>
+        </div>
+        <!-- Form -->
+        <div style="flex:1;padding:18px 22px;overflow-y:auto;">
+          <div style="font-size:20px;font-weight:900;color:#CC0000;margin-bottom:4px;">Registrarme</div>
+          <div style="font-size:11px;color:#666;margin-bottom:16px;line-height:1.5;">Crea tu cuenta en Vívelo Terpel y empieza a ganar puntos.</div>
+          ${["Nombre completo", "CC (Cédula)", "Celular", "Correo electrónico"]
+            .map(
+              (lbl, i) => `
+            <div style="margin-bottom:12px;">
+              <label style="font-size:10px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px;">${lbl}</label>
+              <input id="reg-field-${i}" type="${i === 3 ? "email" : i === 1 || i === 2 ? "number" : "text"}" placeholder="${lbl}" style="width:100%;padding:13px 14px;border:1.5px solid #DDD;border-radius:12px;font-size:13px;color:#333;outline:none;box-sizing:border-box;" oninput="appRegCheck()"/>
+            </div>`,
+            )
+            .join("")}
+          <div id="reg-feedback" style="font-size:11px;min-height:16px;margin-bottom:8px;"></div>
+        </div>
+        <!-- Register button -->
+        <div style="padding:0 22px 24px;flex-shrink:0;">
+          <button id="reg-btn" onclick="appDoRegister()" style="width:100%;padding:15px;border-radius:14px;border:none;background:#DDD;color:#999;font-size:14px;font-weight:700;cursor:not-allowed;">Registrarme</button>
+        </div>
+      </div>`,
+
+          // ── REGISTER SUCCESS ──────────────────────────────────────────────
+          reg_success: `
+      <div style="display:flex;flex-direction:column;height:100%;background:#fff;align-items:center;justify-content:center;padding:28px;text-align:center;">
+        <div style="width:72px;height:72px;border-radius:50%;background:#E8F5E9;display:flex;align-items:center;justify-content:center;font-size:36px;margin-bottom:18px;border:3px solid #4CAF50;">✅</div>
+        <div style="font-size:20px;font-weight:900;color:#1A1A1A;margin-bottom:10px;">¡Registro exitoso!</div>
+        <div style="font-size:12px;color:#666;line-height:1.6;margin-bottom:8px;">Tu cuenta ha sido creada.<br>Ya estás en la base de datos de Vívelo Terpel.</div>
+        <div id="reg-success-info" style="background:#F0FBF0;border:1px solid #C8E6C9;border-radius:12px;padding:14px;margin:10px 0 20px;width:100%;box-sizing:border-box;font-size:12px;color:#2E7D32;text-align:left;"></div>
+        <button onclick="renderAppScreen('onboarding')" style="width:100%;padding:14px;border-radius:14px;border:none;background:#CC0000;color:#fff;font-size:14px;font-weight:700;cursor:pointer;">Ir al inicio</button>
+      </div>`,
+
+          // ── LOGIN NOT FOUND ───────────────────────────────────────────────
+          login_notfound: `
+      <div style="display:flex;flex-direction:column;height:100%;background:#fff;align-items:center;justify-content:center;padding:28px;text-align:center;">
+        <div style="font-size:56px;margin-bottom:16px;">🔍</div>
+        <div style="font-size:18px;font-weight:800;color:#CC0000;margin-bottom:10px;">Usuario no encontrado</div>
+        <div style="font-size:12px;color:#666;line-height:1.6;margin-bottom:24px;">El número de documento <strong>${data.cc || ""}</strong> no está registrado en Vívelo Terpel.</div>
+        <button onclick="renderAppScreen('register')" style="width:100%;padding:14px;border-radius:14px;border:none;background:#CC0000;color:#fff;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:10px;">📝 Registrarme ahora</button>
+        <button onclick="renderAppScreen('login')" style="width:100%;padding:14px;border-radius:14px;border:1.5px solid #DDD;background:#fff;color:#555;font-size:13px;font-weight:600;cursor:pointer;">Intentar de nuevo</button>
+      </div>`,
+
+          // ── LOGIN SUCCESS (welcome back) ──────────────────────────────────
+          login_success: `
+      <div style="display:flex;flex-direction:column;height:100%;background:#fff;align-items:center;justify-content:center;padding:28px;text-align:center;">
+        <div style="width:72px;height:72px;border-radius:50%;background:${data.color || "#CC0000"};display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:900;color:#fff;margin-bottom:16px;border:3px solid rgba(0,0,0,.1);">${(
+          data.nombre || "U"
+        )
+          .split(" ")
+          .map((w) => w[0])
+          .join("")
+          .slice(0, 2)}</div>
+        <div style="font-size:20px;font-weight:900;color:#1A1A1A;margin-bottom:6px;">¡Bienvenido, ${(data.nombre || "Usuario").split(" ")[0]}!</div>
+        <div style="font-size:12px;color:#888;margin-bottom:4px;">CC: ${data.cc || ""}</div>
+        <div style="font-size:13px;color:#CC0000;font-weight:700;margin-bottom:20px;">📊 ${(data.puntos || 0).toLocaleString()} puntos acumulados</div>
+        <div style="background:#FFF9E0;border:1px solid #FFD200;border-radius:12px;padding:14px;width:100%;box-sizing:border-box;margin-bottom:20px;font-size:12px;color:#1A1A1A;text-align:left;">
+          <div style="font-weight:700;margin-bottom:6px;">📋 Datos en DB:</div>
+          <div>👤 ${data.nombre || "—"}</div>
+          <div>📧 ${data.correo || "—"}</div>
+          <div>📱 ${data.celular || "—"}</div>
+        </div>
+        <button onclick="renderAppScreen('onboarding')" style="width:100%;padding:14px;border-radius:14px;border:none;background:#CC0000;color:#fff;font-size:14px;font-weight:700;cursor:pointer;">Entrar a la app</button>
+      </div>`,
+        };
+
+        scr.innerHTML = screens[screen] || screens.onboarding;
+      }
+
+      // Live check while typing CC in login
+      window.appLoginCheck = function () {
+        const cc = (document.getElementById("login-cc")?.value || "").trim();
+        const fb = document.getElementById("login-feedback");
+        const btn = document.getElementById("login-btn");
+        if (!cc || cc.length < 6) {
+          if (fb) fb.innerHTML = "";
+          if (btn) {
+            btn.style.background = "#DDD";
+            btn.style.color = "#999";
+            btn.style.cursor = "not-allowed";
+          }
+          return;
+        }
+        const found =
+          DB.usuarios && DB.usuarios.find((u) => String(u.cc) === cc);
+        if (found) {
+          if (fb)
+            fb.innerHTML = `<span style="color:#27AE60;">✓ Usuario encontrado: <strong>${found.nombre}</strong></span>`;
+          if (btn) {
+            btn.style.background = "#CC0000";
+            btn.style.color = "#fff";
+            btn.style.cursor = "pointer";
+          }
+        } else {
+          if (fb)
+            fb.innerHTML = `<span style="color:#CC0000;">✗ No encontrado en la base de datos</span>`;
+          if (btn) {
+            btn.style.background = "#FF9500";
+            btn.style.color = "#fff";
+            btn.style.cursor = "pointer";
+          }
+        }
+      };
+
+      window.appDoLogin = function () {
+        const cc = (document.getElementById("login-cc")?.value || "").trim();
+        if (!cc) return;
+        // Lookup in DB
+        const found =
+          DB.usuarios && DB.usuarios.find((u) => String(u.cc) === cc);
+        if (found) {
+          // Compute points from historial
+          let pts = 0;
+          (DB.historial_puntos || [])
+            .filter((h) => String(h.usuario_cc) === cc)
+            .forEach((h) => (pts += +h.puntos || 0));
+          const COLORS = [
+            "#CC0000",
+            "#1A7BD4",
+            "#27AE60",
+            "#8E44AD",
+            "#E67E22",
+          ];
+          const ci = DB.usuarios.indexOf(found) % COLORS.length;
+          // Build user object matching the format openPhoneApp expects
+          const userObj = {
+            cc,
+            nombre: found.nombre,
+            correo: found.correo,
+            celular: found.celular,
+            puntos: pts,
+            color: COLORS[ci],
+            beneficios: [], // will be populated by buildNotifData-style logic below
+          };
+          // Pull real beneficios for this user from DB
+          const benUs = (DB.beneficios_usuarios || []).filter(
+            (b) => String(b.usuario_cc) === cc,
+          );
+          const now = new Date();
+          benUs.forEach((bu) => {
+            const ben = (DB.beneficios || []).find(
+              (b) => b.id === bu.beneficio_id || b.id === +bu.beneficio_id,
+            );
+            if (!ben) return;
+            const finDate = new Date(ben.fecha_fin || bu.fecha_fin || now);
+            const daysLeft = Math.round(
+              (finDate - now) / (1000 * 60 * 60 * 24),
+            );
+            const iconMap = {
+              "Bono Combustible $20.000": "⛽",
+              "Descuento Tienda 10%": "🛍️",
+              "Cashback 5% Gasolina": "💰",
+              "Car wash gratis": "🚗",
+              "Cafe gratis": "☕",
+            };
+            userObj.beneficios.push({
+              id: bu.id,
+              tipo: ben.tipo,
+              icono: iconMap[ben.tipo] || "🎁",
+              valor_descuento: ben.valor_descuento,
+              fecha_inicio: ben.fecha_inicio,
+              fecha_fin: ben.fecha_fin,
+              dias_restantes: daysLeft,
+              codigo_qr: bu.codigo_qr,
+              estado:
+                bu.estado === "ACTIVO"
+                  ? "activo"
+                  : bu.estado === "VENCIDO"
+                    ? "vencido"
+                    : "canjeado",
+            });
+          });
+          // If no beneficios found in DB, add a couple demo ones
+          if (!userObj.beneficios.length) {
+            userObj.beneficios = [
+              {
+                id: 1,
+                tipo: "Bono Combustible $20.000",
+                icono: "⛽",
+                valor_descuento: 20000,
+                fecha_inicio: "2026-01-01",
+                fecha_fin: "2026-06-30",
+                dias_restantes: 36,
+                codigo_qr: `QR-${cc.slice(-4)}-001`,
+                estado: "activo",
+              },
+              {
+                id: 2,
+                tipo: "Descuento Tienda 10%",
+                icono: "🛍️",
+                valor_descuento: 10,
+                fecha_inicio: "2026-03-01",
+                fecha_fin: "2026-06-15",
+                dias_restantes: 21,
+                codigo_qr: `QR-${cc.slice(-4)}-002`,
+                estado: "activo",
+              },
+            ];
+          }
+          // Close app-preview-modal and open the full phone overlay
+          closeAppPreview();
+          // Small flash transition then open full app
+          const flash = document.createElement("div");
+          flash.style.cssText =
+            "position:fixed;inset:0;z-index:9999;background:#CC0000;display:flex;align-items:center;justify-content:center;";
+          flash.innerHTML = `<div style="text-align:center;color:#fff;"><div style="font-size:48px;margin-bottom:10px;">T</div><div style="font-size:16px;font-weight:700;">Cargando tu cuenta…</div></div>`;
+          document.body.appendChild(flash);
+          setTimeout(() => {
+            flash.remove();
+            openPhoneApp(userObj, {});
+          }, 700);
+        } else {
+          renderAppScreen("login_notfound", { cc });
+        }
+      };
+
+      window.appRegCheck = function () {
+        const fields = [
+          "reg-field-0",
+          "reg-field-1",
+          "reg-field-2",
+          "reg-field-3",
+        ];
+        const vals = fields.map((id) =>
+          (document.getElementById(id)?.value || "").trim(),
+        );
+        const btn = document.getElementById("reg-btn");
+        const fb = document.getElementById("reg-feedback");
+        const allFilled = vals.every((v) => v.length > 2);
+        const ccExists =
+          DB.usuarios && DB.usuarios.find((u) => String(u.cc) === vals[1]);
+        if (ccExists && vals[1].length > 4) {
+          if (fb)
+            fb.innerHTML = `<span style="color:#CC0000;">⚠ CC ya registrada: ${ccExists.nombre}</span>`;
+          if (btn) {
+            btn.style.background = "#DDD";
+            btn.style.color = "#999";
+            btn.style.cursor = "not-allowed";
+          }
+        } else if (allFilled) {
+          if (fb)
+            fb.innerHTML = `<span style="color:#27AE60;">✓ Datos listos para registrar</span>`;
+          if (btn) {
+            btn.style.background = "#CC0000";
+            btn.style.color = "#fff";
+            btn.style.cursor = "pointer";
+          }
+        } else {
+          if (fb) fb.innerHTML = "";
+          if (btn) {
+            btn.style.background = "#DDD";
+            btn.style.color = "#999";
+            btn.style.cursor = "not-allowed";
+          }
+        }
+      };
+
+      window.appDoRegister = function () {
+        const nombre = (
+          document.getElementById("reg-field-0")?.value || ""
+        ).trim();
+        const cc = (document.getElementById("reg-field-1")?.value || "").trim();
+        const celular = (
+          document.getElementById("reg-field-2")?.value || ""
+        ).trim();
+        const correo = (
+          document.getElementById("reg-field-3")?.value || ""
+        ).trim();
+        if (!nombre || !cc || !celular || !correo) {
+          toast("Completa todos los campos", "err");
+          return;
+        }
+        // Check duplicate
+        if (DB.usuarios && DB.usuarios.find((u) => String(u.cc) === cc)) {
+          toast("CC ya registrada", "err");
+          return;
+        }
+        // INSERT into DB
+        if (!DB.usuarios) DB.usuarios = [];
+        const newUser = { cc, nombre, celular, correo };
+        DB.usuarios.push(newUser);
+        if (!DB.historial_puntos) DB.historial_puntos = [];
+        // Refresh table previews
+        if (typeof renderTablesList === "function") renderTablesList();
+        if (typeof updateStats === "function") updateStats();
+        toast(`✓ Usuario ${nombre} registrado en DB`, "ok");
+
+        // Show success screen briefly, then offer to enter app
+        renderAppScreen("reg_success", {});
+        setTimeout(() => {
+          const el = document.getElementById("reg-success-info");
+          if (el)
+            el.innerHTML = `<strong>👤 ${nombre}</strong><br>CC: ${cc}<br>📱 ${celular}<br>📧 ${correo}<br><br><span style="color:#666;font-size:10px;">✓ Guardado en DB.usuarios</span>`;
+          // Replace "Ir al inicio" button with "Entrar a la app"
+          const btn = document.querySelector("#app-screen button");
+          if (btn) {
+            btn.textContent = "📱 Entrar a mi app";
+            btn.onclick = function () {
+              const COLORS = [
+                "#CC0000",
+                "#1A7BD4",
+                "#27AE60",
+                "#8E44AD",
+                "#E67E22",
+              ];
+              const ci = DB.usuarios.length % COLORS.length;
+              const userObj = {
+                cc,
+                nombre,
+                correo,
+                celular,
+                puntos: 0,
+                color: COLORS[ci],
+                beneficios: [
+                  {
+                    id: 1,
+                    tipo: "Bono Bienvenida",
+                    icono: "🎁",
+                    valor_descuento: 0,
+                    fecha_inicio: new Date().toISOString().split("T")[0],
+                    fecha_fin: "2026-12-31",
+                    dias_restantes: 220,
+                    codigo_qr: `QR-NEW-${cc.slice(-4)}`,
+                    estado: "activo",
+                  },
+                ],
+              };
+              closeAppPreview();
+              const flash = document.createElement("div");
+              flash.style.cssText =
+                "position:fixed;inset:0;z-index:9999;background:#CC0000;display:flex;align-items:center;justify-content:center;";
+              flash.innerHTML = `<div style="text-align:center;color:#fff;"><div style="font-size:48px;margin-bottom:10px;">T</div><div style="font-size:16px;font-weight:700;">¡Bienvenido a Terpel!</div></div>`;
+              document.body.appendChild(flash);
+              setTimeout(() => {
+                flash.remove();
+                openPhoneApp(userObj, {});
+              }, 800);
+            };
+          }
+        }, 80);
+      };
+
       function sendAllCritical() {
         const critical = _notifUsers.filter(
           (u) => u.urgencia === "critical" || u.urgencia === "urgent",
@@ -6640,8 +7494,11 @@ ORDER BY v.precio DESC;</textarea
    INIT
 ════════════════════════════════════════════ */
       (function init() {
-        // Initialize tables pane hidden
+        // Initialize tables pane hidden, palette shown (flow is default)
         document.getElementById("tables-pane").style.display = "none";
+        document.getElementById("palette-pane").style.display = "block";
+        // Hide right panel initially (no node selected)
+        document.getElementById("right-panel").classList.add("rp-hidden");
         renderTablesList();
         updateStats();
 
