@@ -6877,61 +6877,109 @@ ORDER BY v.precio DESC;</textarea
           toast("Completa todos los campos", "err");
           return;
         }
-        // Check duplicate
         if (DB.usuarios && DB.usuarios.find((u) => String(u.cc) === cc)) {
           toast("CC ya registrada", "err");
           return;
         }
-        // INSERT into DB
+
+        const now = new Date();
+        const nowStr = now.toISOString().replace("T", " ").slice(0, 19);
+        const dateStr = now.toISOString().split("T")[0];
+        const PUNTOS_BIENVENIDA = 150;
+
+        /* ── 1. INSERT en DB.usuarios ── */
         if (!DB.usuarios) DB.usuarios = [];
-        const newUser = { cc, nombre, celular, correo };
-        DB.usuarios.push(newUser);
+        DB.usuarios.push({ cc, nombre, celular, correo });
+
+        /* ── 2. Puntos de bienvenida en DB.historial_puntos ── */
         if (!DB.historial_puntos) DB.historial_puntos = [];
-        // Refresh table previews
+        const newHpId =
+          DB.historial_puntos.reduce((mx, r) => Math.max(mx, r.id || 0), 0) + 1;
+        DB.historial_puntos.push({
+          id: newHpId,
+          usuario_cc: cc,
+          tipo_movimiento: "GANANCIA",
+          puntos: PUNTOS_BIENVENIDA,
+          concepto: "Bono de bienvenida Vívelo Terpel",
+          fecha: nowStr,
+        });
+
+        /* ── 3. Asignar beneficio "Café gratis" (id=5) y "Cashback 5%" (id=3) al nuevo usuario ── */
+        // Estos beneficios YA existen en DB.beneficios, así el JOIN funciona
+        if (!DB.beneficios_usuarios) DB.beneficios_usuarios = [];
+        const nextBuId =
+          DB.beneficios_usuarios.reduce((mx, r) => Math.max(mx, r.id || 0), 0) +
+          1;
+        const welcomeBenefits = [
+          { beneficio_id: 5, qr: `QR-${cc.slice(-4)}-W01` }, // Café gratis
+          { beneficio_id: 3, qr: `QR-${cc.slice(-4)}-W02` }, // Cashback 5% Gasolina
+        ];
+        welcomeBenefits.forEach((wb, i) => {
+          DB.beneficios_usuarios.push({
+            id: nextBuId + i,
+            usuario_cc: cc,
+            beneficio_id: wb.beneficio_id,
+            codigo_qr: wb.qr,
+            fecha_redencion: nowStr,
+            estado: "ACTIVO",
+          });
+        });
+
+        /* ── 4. Refrescar UI ── */
         if (typeof renderTablesList === "function") renderTablesList();
         if (typeof updateStats === "function") updateStats();
-        toast(`✓ Usuario ${nombre} registrado en DB`, "ok");
+        toast(
+          `✓ Usuario ${nombre} registrado · ${PUNTOS_BIENVENIDA} pts de bienvenida`,
+          "ok",
+        );
 
-        // Show success screen briefly, then offer to enter app
+        /* ── 5. Armar userObj para abrir la app ── */
+        const COLORS = ["#CC0000", "#1A7BD4", "#27AE60", "#8E44AD", "#E67E22"];
+        const ci = (DB.usuarios.length - 1) % COLORS.length;
+        const beneficiosObj = welcomeBenefits.map((wb, i) => {
+          const ben = (DB.beneficios || []).find(
+            (b) => b.id === wb.beneficio_id,
+          );
+          const finDate = new Date(ben?.fecha_fin || "2026-12-31");
+          const daysLeft = Math.round((finDate - now) / (1000 * 60 * 60 * 24));
+          const iconMap = { 5: "☕", 3: "💰", 1: "⛽", 2: "🛍️", 4: "🚗" };
+          return {
+            id: wb.beneficio_id,
+            tipo: ben?.tipo || "Beneficio",
+            icono: iconMap[wb.beneficio_id] || "🎁",
+            valor_descuento: ben?.valor_descuento || 0,
+            fecha_inicio: dateStr,
+            fecha_fin: ben?.fecha_fin || "2026-12-31",
+            dias_restantes: daysLeft,
+            codigo_qr: wb.qr,
+            estado: "activo",
+          };
+        });
+        const userObj = {
+          cc,
+          nombre,
+          correo,
+          celular,
+          puntos: PUNTOS_BIENVENIDA,
+          color: COLORS[ci],
+          beneficios: beneficiosObj,
+        };
+
+        /* ── 6. Mostrar pantalla de éxito ── */
         renderAppScreen("reg_success", {});
         setTimeout(() => {
           const el = document.getElementById("reg-success-info");
           if (el)
-            el.innerHTML = `<strong>👤 ${nombre}</strong><br>CC: ${cc}<br>📱 ${celular}<br>📧 ${correo}<br><br><span style="color:#666;font-size:10px;">✓ Guardado en DB.usuarios</span>`;
-          // Replace "Ir al inicio" button with "Entrar a la app"
+            el.innerHTML = `
+      <strong>👤 ${nombre}</strong><br>CC: ${cc}<br>📱 ${celular}<br>📧 ${correo}
+      <br><br>
+      <span style="color:#CC0000;font-weight:700;">🎁 ${PUNTOS_BIENVENIDA} puntos de bienvenida añadidos</span><br>
+      <span style="color:#27AE60;">☕ Café gratis · 💰 Cashback 5% Gasolina asignados</span><br>
+      <span style="color:#666;font-size:10px;margin-top:4px;display:block;">✓ Todo guardado en DB — consulta con SQL</span>`;
           const btn = document.querySelector("#app-screen button");
           if (btn) {
             btn.textContent = "📱 Entrar a mi app";
             btn.onclick = function () {
-              const COLORS = [
-                "#CC0000",
-                "#1A7BD4",
-                "#27AE60",
-                "#8E44AD",
-                "#E67E22",
-              ];
-              const ci = DB.usuarios.length % COLORS.length;
-              const userObj = {
-                cc,
-                nombre,
-                correo,
-                celular,
-                puntos: 0,
-                color: COLORS[ci],
-                beneficios: [
-                  {
-                    id: 1,
-                    tipo: "Bono Bienvenida",
-                    icono: "🎁",
-                    valor_descuento: 0,
-                    fecha_inicio: new Date().toISOString().split("T")[0],
-                    fecha_fin: "2026-12-31",
-                    dias_restantes: 220,
-                    codigo_qr: `QR-NEW-${cc.slice(-4)}`,
-                    estado: "activo",
-                  },
-                ],
-              };
               closeAppPreview();
               const flash = document.createElement("div");
               flash.style.cssText =
